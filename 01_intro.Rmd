@@ -1,0 +1,81 @@
+---
+title: "Introduction"
+author: "B. Maranget"
+date: "06/03/2025"
+output: 
+  html_document: 
+    number_sections: yes
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+L6ECSIG Construction et utilisation des SIG 2021/22
+ (Gr. 6 et , Jeudi 16h - 20h Salle 217 sur le campus de Clignancourt)
+ 
+  L'idée du cours est de consolider les acquis de la L2 et de familiariser les étudiants au codage avec R.
+
+Donc fini d'utiliser les outils ArcGIS, on part sur rStudio, R et éventuellement git
+
+# Déroulé
+
+```{r}
+data <- read.csv("data/deroule.csv", header = T, fileEncoding = "UTF-8")
+knitr::kable(data)
+```
+
+Notez au passage qu'il n'y aura pas cours après le 3 avril et que le 15/05 est la dernière séance.
+Donc, travail perso du 3/04. Donc présentation du 3/04 par groupe du projet.
+
+
+# Evaluation
+
+régime du contrôle continu, 
+
+Deux notes : 
+- une note cours (DST coeff 2, le jeudi 13 avril) 
+- et une note maison (+ les exercices pour moitié de la note maison)
+
+
+Le DST sera sur machine d'une durée de 2h :
+- un exercice sous Arcgis Pro (avec un rendu en .pdf) (10 pt) 
+- un QCM (10 pt)
+
+
+# Données
+
+Il s'agit de vos données pour la commune choisie.
+
+- cadastre
+
+- PLUi
+
+- valeurs foncières géolocalisées
+
+
+
+```{r, eval=FALSE}
+data <- st_read("data/construction.gpkg", "villes", delete_layer = T)
+```
+
+# Bibliographie
+
+https://framabook.org/r-et-espace/
+
+
+
+
+
+
+

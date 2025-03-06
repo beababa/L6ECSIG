@@ -1,0 +1,165 @@
+---
+title: "Environnement de travail"
+author: "B. Maranget"
+date: "06/03/2024"
+output: 
+  html_document: 
+    number_sections: yes
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+Projet R, markdown 
+
+Concernant git, c'est plus difficile, à voir peut-être plus tard (galère probable pour les clés SSH)
+
+# Projet R et Markdown
+
+## Interface Rstudio
+
+4 fenêtres
+
+## Créer un projet R
+
+File / Nouveau projet
+
+Le projet permet de conserver l'emplacement des fichiers.
+
+Créer l'arborescence suivante
+
+![](img/arbo.png)
+
+
+## Le markdown
+
+Créer un markdown dans le répertoire script dans Rstudio, le knitter.
+
+![](img/knit.png)
+
+## paramétrage de la TOC et de l'execution des chunks
+
+
+````
+output: 
+  html_document: 
+    number_sections: yes
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+````
+
+
+source :
+
+https://blog.wax-o.com/2014/04/tutoriel-un-guide-pour-bien-commencer-avec-markdown/
+
+
+
+
+
+
+# Git
+
+## Compte et projet
+
+Créer un compte GIT et un projet
+
+![](img/projetGIT.png)
+
+## Cloner le projet sur sa machine
+
+cloner le projet sur son pc avec la commande *git clone* et le lien vers le répertoire
+
+
+### Sur l'interface github
+
+Récupérer le lien https du projet dans code
+
+![](img/GITclone.png)
+
+### Dans une fenêtre cmd de windows
+
+Pour ouvrir une fenêtre cmd, il suffit de faire le bouton windows et de taper *cmd*.
+
+![](img/GITcloneShell.png)
+
+### Installation des commandes git
+
+Cela ne fonctionne pas ... il faut installer les commandes git sous votre machine (sous Mac et Linux c'est pré-installé)
+
+source : https://astuces-informatique.com/comment-installer-utiliser-git-sous-windows/
+
+
+Faire l'installation et essayer à nouveau de cloner...
+
+## Clés SSH
+
+L'utilisation des clés permet d'éviter la saisie du mot de passe.
+
+### Génération des clés
+
+Pour pouvoir travailler ainsi, il faut avoir générer des clés
+
+Ouvrir une fenêtre avec la commande cmd et saisir *ssh-keygen*
+
+Le répertoire où la clé est créée est, par défaut, le répertoire utilisateur.
+(afficher les fichiers cachés est nécessaire)
+
+
+Le répertoire utilisateur est à la racine de votre profil.
+
+![](img/gitRepUtilisateur.png)
+
+
+source :
+
+https://www.lojiciels.com/comment-generer-des-cles-publiques-privees-ssh-sous-windows/
+
+
+### Copie de la clé publique sur le serveur
+
+Au niveau du github, coin haut droit *settings* puis *ssh keys*
+
+Il s'agit de récupérer le contenu de la clé, la commande en ligne 
+
+*clip < .ssh/id_rsa.pub*
+
+
+(Sinon ouvrir le fichier et faire un copier - coller)
+
+
+
+source :
+
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
+
+
+### Test
+
+*ssh -T git@github.com*
+
+
+![](img/GIThi.png)
+
+## Mise à jour du projet : 4 commandes à connaître
+
+
+````
+git pull
+git add .
+git commit -m "version finale veille cours"
+git push
+````
+
