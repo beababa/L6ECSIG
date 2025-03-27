@@ -1,0 +1,61 @@
+---
+title: "Traitement"
+date: "27/03/2024"
+output: 
+  html_document: 
+    number_sections: yes
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+
+# Remplacement du cours
+
+Le moodle est très lent. Je créerai un item pour un dépôt de l'exercice dés que cela
+sera résolu.
+
+La fac étant fermée, je vous propose de me rendre un .pdf sur lequel vous travaillez environ 2 H (plus si vous le souhaitez) suivant le déroulé du cours suivant. Je regarderai vos rendus dimanche soir.
+
+# Contenu du rapport
+
+## Correction DST
+
+Vos réactions / questions par rapport 
+
+    • à la notation
+    • à la correction proposée
+
+## Environnement projet
+
+    • faire une arborescence semblable à celle qui est proposée sur le cours (cf environnement); 
+    • créer un _site.yml et le faire fonctionner
+    • mettre sur votre git les 2 premiers html de votre projet 
+
+Dans le rapport, mettre la copie d'écran de votre arborescence, de votre _site.yml et le lien vers votre site
+
+## Traitement
+
+    • Commenter le code du début de la correction du devoir
+    • Faire un schéma de géotraitement rapide pour vos données et proposez le code
+
+Dans le rapport, mettre la copie d'écran du code commenté, le schéma, et le code
+
+# Attention
+
+Même si le rendu du .pdf reste individuel, vous pouvez bien sûr commencer à travailler avec votre groupe.
+
+Pour mémoire, un oral de 5 minutes sur votre projet est prévu au dernier cours.
+
+
+
+
