@@ -36,7 +36,7 @@ knitr::kable(data)
 ```
 
 Notez au passage qu'il n'y aura pas cours après le 3 avril et que le 15/05 est la dernière séance.
-Donc, travail perso du 3/04. Donc présentation du 3/04 par groupe du projet.
+Donc présentation du 3/04 par groupe du projet de projet.
 
 
 # Evaluation

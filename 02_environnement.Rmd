@@ -1,6 +1,5 @@
 ---
 title: "Environnement de travail"
-author: "B. Maranget"
 date: "06/03/2024"
 output: 
   html_document: 
@@ -21,9 +20,11 @@ knitr::opts_chunk$set(warning = FALSE)
 
 # Objet
 
-Projet R, markdown 
+Pour construire le site web sur lequel déposer le projet de fin de semestre, il faut deux éléments
 
-Concernant git, c'est plus difficile, à voir peut-être plus tard (galère probable pour les clés SSH)
+- Projet R, markdown, _site.yml
+
+- Concernant git, c'est plus difficile, à voir peut-être plus tard (galère probable pour les clés SSH)
 
 # Projet R et Markdown
 
@@ -51,26 +52,93 @@ Créer un markdown dans le répertoire script dans Rstudio, le knitter.
 ## paramétrage de la TOC et de l'execution des chunks
 
 
+![](img/debut.png)
+
 ````
+---
 output: 
   html_document: 
     number_sections: yes
     toc: yes
 editor_options: 
   chunk_output_type: console
+---
 ````
 
+ Et, juste en dessous, dans un chunk avec la mention {r setup, include=FALSE}
+ 
+ 
+```
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
 
 source :
 
 https://blog.wax-o.com/2014/04/tutoriel-un-guide-pour-bien-commencer-avec-markdown/
 
 
+## Construire un site web : le _site.yml
+
+source :
+
+https://ymlthis.r-lib.org/reference/yml_site_opts.html#examples
+
+### Exemple de _site.yml
 
 
+```{r, eval=FALSE}
+name: "L6ECSIG Construction et utilisation des SIG"
+navbar:
+  left:
+    - text: "Introduction"
+      href: 01_intro.html
+    - text: "Environnement"
+      href: 02_environnement.html
+    - text: "Bases R"
+      href: 03_basesR.html 
+    - text: "R spatial"
+      href: 04_Rspatial.html
+    - text: "Correction"
+      href: 05_correction.html 
+    - text: "Donnees"
+      href: 06_Donnees.html 
+    - text: "Traitement"
+      href: 07_traitement.html   
+    - text: "Resultat"
+      href: 08_resultat.html   
+  right:
+    - icon: fa-github
+      href: https://github.com/beababa/beababa.github.io
+output: 
+  html_document:
+    toc_float: TRUE  
+    theme: united
+    highlight: tango
+    include:
+      after_body: footer.html
+    number_sections: yes
+    exclude: [data-raw, data]
+    css: css/styles.css
+```
 
+
+A noter
+
+- attention aux accents
+
+- à chaque knit, quels changements dans l'arborescence du projet ?
+
+### Exercice
+
+Construire votre _site.yml avec une intro / donnees / traitement / resultat
+et sans style particulier (le css)
 
 # Git
+
 
 ## Compte et projet
 
@@ -78,24 +146,35 @@ Créer un compte GIT et un projet
 
 ![](img/projetGIT.png)
 
-## Cloner le projet sur sa machine
+## Solution facile
+
+Chaque étudiant crée un compte git et met en place le projet nom.github.io afin
+d'avoir un site internet.
+
+Les données seront téléchargées par l'interface graphique.
+
+Les données téléchargées seront uniquement celles du répertoire "_site" du projet.
+
+## Mise en place de workflow git (plus complexe)
+
+### Cloner le projet sur sa machine
 
 cloner le projet sur son pc avec la commande *git clone* et le lien vers le répertoire
 
 
-### Sur l'interface github
+#### Sur l'interface github
 
 Récupérer le lien https du projet dans code
 
 ![](img/GITclone.png)
 
-### Dans une fenêtre cmd de windows
+#### Dans une fenêtre cmd de windows
 
 Pour ouvrir une fenêtre cmd, il suffit de faire le bouton windows et de taper *cmd*.
 
 ![](img/GITcloneShell.png)
 
-### Installation des commandes git
+#### Installation des commandes git
 
 Cela ne fonctionne pas ... il faut installer les commandes git sous votre machine (sous Mac et Linux c'est pré-installé)
 
@@ -104,11 +183,11 @@ source : https://astuces-informatique.com/comment-installer-utiliser-git-sous-wi
 
 Faire l'installation et essayer à nouveau de cloner...
 
-## Clés SSH
+### Clés SSH
 
 L'utilisation des clés permet d'éviter la saisie du mot de passe.
 
-### Génération des clés
+#### Génération des clés
 
 Pour pouvoir travailler ainsi, il faut avoir générer des clés
 
@@ -128,7 +207,7 @@ source :
 https://www.lojiciels.com/comment-generer-des-cles-publiques-privees-ssh-sous-windows/
 
 
-### Copie de la clé publique sur le serveur
+#### Copie de la clé publique sur le serveur
 
 Au niveau du github, coin haut droit *settings* puis *ssh keys*
 
@@ -146,14 +225,14 @@ source :
 https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
 
 
-### Test
+#### Test
 
 *ssh -T git@github.com*
 
 
 ![](img/GIThi.png)
 
-## Mise à jour du projet : 4 commandes à connaître
+### Mise à jour du projet : 4 commandes à connaître
 
 
 ````
@@ -162,4 +241,8 @@ git add .
 git commit -m "version finale veille cours"
 git push
 ````
+
+
+
+
 

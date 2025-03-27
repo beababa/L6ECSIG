@@ -11,16 +11,12 @@ navbar:
       href: 04_Rspatial.html
     - text: "Correction"
       href: 05_correction.html 
-    - text: "OSM"
-      href: 06_OSM.html   
-    - text: "Valorisation"
-      href: 07_valorisation.html   
-    - text: "Web mapping"
-      href: 08_webmapping.html
-    - text: "Correction2"
-      href: 09_correction.html  
-    - text: "Revision"
-      href: 10_revision.html  
+    - text: "Donnees"
+      href: 06_Donnees.html 
+    - text: "Traitement"
+      href: 07_traitement.html   
+    - text: "Resultat"
+      href: 08_resultat.html   
   right:
     - icon: fa-github
       href: https://github.com/beababa/beababa.github.io

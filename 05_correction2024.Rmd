@@ -1,0 +1,185 @@
+---
+title: "Géotraitements et calculs"
+author: "B. Maranget"
+date: "13/03/2025"
+output: 
+  html_document: 
+    number_sections: yes
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = TRUE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+Intersection spatiale et exploration statistique du carroyage INSEE 200 m
+
+
+
+# Le fichier spatial
+
+Les données INSEE sont très lourdes (223 M°)
+
+sources :
+
+- https:/www.insee.fr/fr/statistiques/4176290?sommaire=4176305
+
+- https://www.data.gouv.fr/fr/organizations/openstreetmap/
+
+
+On filtre donc sur sa commune afin d'avoir un fichier un peu moins gros.
+
+
+```{r, eval = FALSE}
+insee <- st_read("data/gros/Filosofi2015_carreaux_200m_metropole.gpkg")
+idf <- st_read("data/gros/regions-20180101-shp/regions-20180101.shp")
+# Transformation de la projection de idf (les données osm sont toujours en 4326, projection mondiale)
+idf <- st_transform(idf, 2154)
+# On filtre sur le code insee de l'île de france (11), les autres régions ne nous intéressent pas.
+idf <- idf [idf$code_insee == 11,]
+# Intersection spatiale
+idfInsee <- st_intersection(insee, idf)
+st_write(idfInsee,"data/insee.gpkg","idf", delete_layer = T)
+```
+
+
+## Le fichier .csv
+
+Pour créer un fichier .csv, à partir d'un fichier de formes, il faut faire "tomber" la colonne géométrique (commande **drop**)
+
+
+
+```{r, eval=FALSE}
+idfcsv <- idfInsee [,c(1:42), drop = T]
+write.csv(idfcsv, "data/idfInsee.csv", fileEncoding = "UTF-8")
+```
+
+
+
+## Récupérations des copies
+
+
+Les étudiants ont déposé leur script sur leur git. La récupération est possible de
+manière automatisé.
+
+### Algorithme
+
+- importer le tableau des dépots git et du prénom étudiant
+- Tant que la liste des sites n'est pas finie
+    - lire
+    - chercher le fichier
+    - l'enregistrer dans le répertoire DST sous la forme prénom étudiant et extension .Rmd
+    
+- Fin boucle
+
+
+### Script
+
+```{r}
+ref <- read.csv("data/cours6.csv", fileEncoding = "UTF-8")
+ref <- ref [ref$lien.évaluation != "", c(1,4,5)]
+length(ref$lien.évaluation)
+# 14 étudiants ont rendu un script...
+ok <- grep(".Rmd", ref$lien.évaluation)
+# ... dont 7 seulement un Rmd
+ref$lien.évaluation [-ok]
+# ...les 7 autres ont parfois rendu uniqumement le répertoire où est le script.
+# d'où correction
+ref$lien.ok
+# Le 14e étudiant n'a pas de dépôt public, demande d'envoi par mail.
+```
+
+
+```{r}
+fin <- length(ref$lien.ok)-1
+  chemin <- "DST/"
+for (i in 1:fin){
+  download.file(ref$lien.ok [i], paste0(chemin,ref$Prénom [i], ".Rmd"))
+}
+```
+
+
+En fait, les fichiers récupérés ne correspondent pas au .Rmd.
+La récupération manuelle s'impose....
+
+
+# Intersection spatiale
+
+## Limites des bureaux de vote
+
+Afin de faire l'intersection spatiale, on crée une enveloppe autour des bureaux
+de vote.
+
+```{r}
+library(sf)
+data <- st_read("data/vote.gpkg", "zone")
+plot(data$geom, main = "Bureaux de vote")
+limite <- st_convex_hull(st_union(data$geom))
+class(limite)
+# l'objet limite n'est pas un dataframe, juste un polygone
+limite <- st_as_sf(limite)
+plot(limite, add = TRUE, col= NA, border = "red")
+```
+
+
+
+## Intersection spatiale 
+
+
+```{r}
+idfInsee <- st_read("data/insee.gpkg", "idf")
+bondyInsee <- st_intersection (idfInsee, limite)
+st_write(bondyInsee, "data/insee.gpkg", "bondy", delete_layer = T)
+```
+
+
+
+
+# Explorations statistiques
+
+
+On choisir la variable *Men_pauv* qui représente le nombre de ménages pauvres.
+
+```{r}
+data <- read.csv("data/bondyInsee.csv", fileEncoding = "UTF-8")
+names(data)
+barplot(data$Men_pauv, main = "carroyage INSEE Bondy, inégalités", xlab = "carreaux carroyage" ,
+        ylab = "Nb de ménages pauvres", col = "red", border = NA)
+```
+
+Le graphique montrer qu'il existe de grandes inégalités à Bondy. Quelques carreaux
+ont plus de 200 ménages pauvres, mais l'énorme majorité est en dessous de 50.
+
+Il est évident qu'il vaut mieux cartographier...
+
+
+# Bonus cartographique
+
+```{r}
+library(mapsf)
+data <- st_read("data/vote.gpkg", "inseeBondy")
+mf_map(data, type = "choro", pal = "Burg",
+       border = NA, var = "Men_pauv", leg_title = "Nb de ménages pauvres")
+mf_layout(title =  "Pauvreté à Bondy", credits = "INSEE Carroyage 200 m") 
+```
+
+
+En fait l'exploration statistique passe par un histogramme qui permet de définir les seuils que l'on va cartographier.
+
+```{r}
+hist(data$Men_pauv, xlab = "valeurs des carreaux", ylab = "nb de carreaux")
+# Définition de 3 paliers
+paliers <- c(0,50,200,300)
+mf_map(data, type ="choro", var = "Men_pauv", breaks = paliers, paliers, pal = "Burg", border = "antiquewhite1", leg_title = "Nb de ménages pauvres")
+mf_layout(title =  "Concentration de la pauvreté à Bondy", credits = "INSEE Carroyage 200 m")
+```
+
