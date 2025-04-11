@@ -15,7 +15,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = TRUE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(eval = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -77,7 +77,8 @@ cheatsheet : base map et export map
 ## Les histogrammes
 
 ```{r}
-summary(vote)
+summary(vote$Suffra
+        ges.exprimés)
 png("img/histo.png")
 par (mfrow = c(2,1))
 seuilG <- seq(25,200, by = 25)
