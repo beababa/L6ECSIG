@@ -102,7 +102,7 @@ mf_map(sel, type = "choro", pal = "Burg",
 ```
 
 
-# Jointure attributaire
+# Jointure attributaire : cadastre et vf
 
 
 Mettre un lien entre le cadastre et la valeur foncière
@@ -156,11 +156,11 @@ Il faut donc concaténer pour créer la clé du cadastre
 vfBondy <- vf [vf$ville == "BONDY",]
 cadastre$cle <- paste0(cadastre$section, cadastre$numero)
 jointure <- merge(cadastre, vfBondy, by = "cle")
-st_write(jointure, "data/bondy.gpkg", "jointure", delete_layer = T)
+st_write(jointure [,c( "cle", "montantMoyen", "montantCourt", "nb")], "data/bondy.gpkg", "vfNb", delete_layer = T)
 ```
 
 
-# Carte des résultats
+### Carte des résultats
 
 ```{r}
 library(sf)
@@ -169,6 +169,142 @@ summary(jointure$nb)
 mf_map(cadastre, border = NA, col = "wheat")
 mf_map(jointure, type = "choro", var = "nb", add = T)
 mf_layout("Nb de transactions", "data.gouv\n2025")
-
 ```
+
+
+# Jointure spatiale : vf et zonages PLUi
+
+
+## Données
+
+
+### Chargement
+
+```{r}
+vfNb <- st_read("data/bondy.gpkg", "vfNb")
+```
+
+
+
+```{r}
+zone <- st_read("data/gros/PLUi_Bondy/200057875_ZONE_URBA_20210629.shp")
+table(zone$TYPEZONE)
+mf_map(zone, var= "TYPEZONE", type = "typo")
+mf_layout("Zonage PLUi", "PLUI M2\nEst Ensemble")
+```
+
+### Filtre sur Bondy et zone N
+
+```{r}
+zone <- zone [zone$Commune == 'Bondy'& zone$TYPEZONE == 'N',]
+st_write(zone, "data/bondy.gpkg", "zoneN", delete_layer = T)
+```
+
+
+### Vérification des projections
+
+```{r}
+st_crs(zone)
+st_crs(vfNb)
+zone <- st_transform(zone,4326)
+```
+
+
+
+# Intersection spatiale
+
+
+## Simple
+
+```{r}
+inter <- st_intersection(jointure [,c("nb", "montantCourt")], zoneN [,c("LIBELLE")], )
+```
+
+
+Il n'y a que 3 intersections entre transactions foncières et zone naturelle sur Bondy, c'est plutôt logique.
+
+
+### Carte
+
+```{r}
+library(mapview)
+mapview(inter)
+```
+
+
+Il ne s'agit d'ailleurs que de bords de zone.
+
+On tente une nouvelle intersection avec un tampon pour récupérer les transactions auprès 
+des zone N
+
+## Avec tampon des zones N
+
+```{r}
+tampon <- st_buffer(zoneN, 100)
+mf_map(tampon)
+```
+
+On crée un identifiant pour chaque tampon pour les identifier
+
+```{r}
+tampon$idTampon <- rownames(tampon)
+```
+
+
+
+```{r}
+inter <- st_intersection(vfNb, tampon [, c("idTampon" )])
+```
+
+
+
+```{r}
+mf_map(tampon, col = NA, border = "green")
+mf_map(vfNb, col = "wheat", border = NA, add = T)
+mf_map(inter, var= "nb", type= "choro", pal = "YlOrRd", add =T, border = NA)
+mf_layout("Tampons zone N et transactions foncières")
+```
+
+65 parcelles en partie dans un tampon, c'est déjà mieux.
+
+
+### Avec agrégation du nb de tampons par parcelle
+
+
+Certains parcelles appartiennent même à plusieurs tampons
+
+
+```{r}
+aggCleTampon <- as.data.frame(table(inter$cle))
+names(aggCleTampon) <- c("cle", "nbTampons")
+table(aggCleTampon$nbTampons)
+# jointure attributaire pour récupérer le nb de Tampon
+jointure <- merge(inter, aggCleTampon, by="cle")
+mf_map(tampon, col = NA, border = "green")
+mf_map(jointure, add = T, type = "typo", var ="nbTampons", border = NA)
+mf_layout("Mesure de la proximité zones N", "PLUi M2, valeurs foncières\nEst Ensemble, DGFIP")
+```
+
+
+# Représenter 2 variables
+
+Nous avons donc le nb de transactions foncières et l'indice de la proximité aux zones N.
+
+
+
+```{r}
+summary(jointure [,c("nb", "nbTampons")])
+boxplot(nb~nbTampons, data = jointure, main = "Relation entre nb de transactions et indice proximité zone N")
+```
+
+
+
+
+Essayer de faire une carte cloroplethe avec Arcgis
+
+```{r}
+st_layers("data/bondy.gpkg")
+st_write(jointure, "data/bondy.gpkg", "vfNbTampon", delete_layer = T)
+```
+
 
