@@ -1,0 +1,5 @@
+nom,date,projection,format,poids,étendue,lien
+cadastre dpt (limites communes dpt),2025,,shape,500 K°,dpt,https://cadastre.data.gouv.fr/data/etalab-cadastre/2025-12-01/shp/departements/93/
+limite commune,2025,,geojson,26 K°,bondy,rqt assistant overpass : admin_level=8 in bondy
+carreaux filosofi,2018,,gpkg,207 M°,france,https://www.insee.fr/fr/statistiques/7655475?sommaire=7655515
+parcelles commune,2025,,geojson,4 M°,bondy,https://cadastre.data.gouv.fr/data/etalab-cadastre/2025-12-01/geojson/communes/93/93010/
