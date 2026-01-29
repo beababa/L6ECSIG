@@ -1,0 +1,63 @@
+---
+title: "Introduction"
+author: "B Maranget"
+output: 
+  html: 
+    number_sections: true
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+L6ECSIG Construction et utilisation des SIG 2025/26
+
+(Gr. 6 et , Jeudi 16h30 - 19h30 Salle 217 sur le campus de Clignancourt)
+
+L'idée du cours est de consolider les acquis de la L2 et de familiariser les étudiants à Arcgis pro et au codage avec R (une plateforme de versioning très utilisée.)
+
+La thématique utilisée est *Commune pauvre et/ou riche ?*
+
+# Déroulé
+
+```{r}
+data <- read.csv("data/deroule.csv", header = T, fileEncoding = "UTF-8")
+knitr::kable(data)
+```
+
+# Evaluation
+
+régime du contrôle continu,
+
+Deux notes :
+
+\- une partiel
+
+\- une note maison (+ les exercices pour moitié de la note maison)
+
+Le partiel sera sur machine d'une durée de 1h30 : - un exercice sous Arcgis Pro (10 pt) - et un autre sous R(10 pt) (avec un rendu en .pdf)
+
+# Données
+
+Il s'agit de vos données pour la commune choisie. Principalement :
+
+-   OFGL
+
+-   Filosofi
+
+```{r, eval=FALSE}
+data <- st_read("data/construction.gpkg", "villes", delete_layer = T)
+```
+
+# Ressources
+
+<https://learn.arcgis.com/fr/gallery/#?p=arcgispro>
+
+https://framabook.org/r-et-espace/
