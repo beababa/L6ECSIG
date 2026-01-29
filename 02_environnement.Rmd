@@ -45,7 +45,11 @@ Créer l'arborescence suivante
 
 ## Le markdown
 
-Créer un markdown dans le répertoire script dans Rstudio, le knitter.
+### Le script
+
+Dans l'interface Rstudio, fichier / nouveau markdown
+
+Enregistrer le markdown dans le répertoire projet dans Rstudio, le knitter.
 
 ![](img/knit.png)
 
@@ -132,6 +136,9 @@ A noter
 
 - à chaque knit, quels changements dans l'arborescence du projet ?
 
+
+
+
 ### Exercice
 
 Construire votre _site.yml avec une intro / donnees / traitement / resultat
@@ -152,6 +159,8 @@ Chaque étudiant crée un compte git et met en place le projet nom.github.io afi
 d'avoir un site internet.
 
 Les données seront téléchargées par l'interface graphique.
+
+![](img/telechargerfichier.png)
 
 Les données téléchargées seront uniquement celles du répertoire "_site" du projet.
 
@@ -243,6 +252,14 @@ git push
 ````
 
 
+
+# Projets étudiants
+
+
+https://quoifleur.github.io/01_intro.html
+
+
+https://mamousrbr.github.io/
 
 
 

@@ -1,7 +1,6 @@
 ---
-title: "Correction exercice discrétisation"
-author: "B. Maranget"
-date: "07/04/2022"
+title: "Résultat"
+date: "03/04/2025"
 output: 
   html_document: 
     number_sections: yes
@@ -15,19 +14,26 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = TRUE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(eval = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
 # Objet
 
-2 cartographies électorales : correction
+Exemples de cartographies, les élections à Bondy en 2022
 
-Montrer les erreurs à éviter
-- mauvaise discrétisation
-- nb couleurs insuffisants
+A retenir
+
+- jeux de couleur
+- discrétisation au travers des histogrammes
+- insertion graphiques dans la carte
+
+source :
+
+https://riatelab.github.io/mapsf/
 
 
+En cours, répondre aux questions au fil du script (La correction sera disponible en .pdf sur le moodle après le cours)
 
 # Import
 
@@ -35,11 +41,23 @@ Montrer les erreurs à éviter
 ```{r}
 library(sf)
 vote <- st_read("data/vote.gpkg", "jointure")
-vote <- vote [,c(14,15)]
-str(vote)
+vote <- vote [,c(14,15,13)]
+names(vote)
 names(vote) [c(1,2)] <- c("GAUCHE", "DROITE")
 ```
 
+Calcul % voix
+
+```{r}
+vote$GAUCHE <- round((vote$GAUCHE / vote$Suffrages.exprimés)*100,0)
+vote$DROITE <- round((vote$DROITE / vote$Suffrages.exprimés) * 100,0)
+vote
+```
+
+> QUESTION 
+
+> Quelle serait la cartographie utilisée si on utilisait les valeurs absolues et non
+pas les % de vote ?
 
 # Première cartographie
 
@@ -55,6 +73,18 @@ mf_map(vote, type = "choro", pal = "Teal",
 mf_layout(title = "vote droite Bondy, municipales 2022", credits = "pv électoral\ncours SIG, mars 2022")
 dev.off()
 ```
+
+
+> QUESTIONS 
+
+> - Que détermine *mfrow* ? 
+> - A quoi servent *width* et *height* ? 
+> - Que signifie *pal* ? 
+> - Comment se fait la *discrétisation* ? Que signifie *choro* ?
+
+Attention, pour intégrer l'image au markdown, il faut écrire dans le script, en dehors des chunks
+
+![](img/integImage.png)
 
 ![](img/vote.png)
 
@@ -78,13 +108,20 @@ cheatsheet : base map et export map
 
 ```{r}
 summary(vote)
+```
+
+> QUESTION
+
+> A quoi sert la fonction summary ?
+
+```{r}
 png("img/histo.png")
 par (mfrow = c(2,1))
-seuilG <- seq(25,200, by = 25)
-hist(vote$GAUCHE, breaks = seuilG, col = hcl.colors(7,"Burg", rev = T), right = F,
-     border = NA, main = "Gauche")
-seuilD <- c(80,120,140,180,240)
-hist(vote$DROITE, breaks = seuilD, col = hcl.colors(4, "Teal", rev = T), right = F, border = NA, main = "DROITE")
+seuilG <- seq(5,25, by = 5)
+hist(vote$GAUCHE, breaks = seuilG, col = hcl.colors(4,"Burg", rev = T), right = F,
+     border = NA, main = "GAUCHE", xlab = "Nb de votes", ylab = "Nb de bureaux de vote")
+seuilD <- seq(10,30, by = 5)
+hist(vote$DROITE,  breaks = seuilD, col = hcl.colors(4, "Teal", rev = T), right = F, border = NA, main = "DROITE", xlab = "Nb de votes", ylab = "Nb de bureaux de vote")
 dev.off()
 ```
 
@@ -94,30 +131,38 @@ dev.off()
 
 
 ```{r}
+seuilG <- seq(5,25, by = 5)
 mf_export(vote, filename =  "img/resultG.png")
-mf_map(vote, type = "choro" ,var = "GAUCHE", breaks = seuilG, pal =  hcl.colors(7,"Burg", rev = T), leg_pos = "n" , border = NA)
-mf_label(vote, "GAUCHE")
+mf_map(vote, type = "choro" ,var = "GAUCHE", breaks = seuilG, pal =  hcl.colors(4,"Burg", rev = T), leg_pos = NA , border = NA)
+mf_label(vote, "GAUCHE", halo = T)
 mf_layout("GAUCHE",credits = "pv électoral\nBondy, avril 2022")
 mf_inset_on (vote, pos = "topright")
 par(mar = c(2,2,2,2))
-hist(vote$GAUCHE, breaks = seuilG, col = hcl.colors(7,"Burg", rev = T), right = F,
+hist(vote$GAUCHE, breaks = seuilG, col = hcl.colors(4,"Burg", rev = T), right = F,
      border = NA, main = "", xlab = "", ylab = "", axes = F)
 mf_inset_off()
 dev.off()
+```
+
+
+```{r}
+seuilD <- seq(10,30, by = 5)
 mf_export(vote, filename =  "img/resultD.png")
-mf_map(vote, type = "choro", var = "DROITE", breaks = seuilD, pal =  hcl.colors(4,"Teal", rev = T), leg_pos = "n" , border = NA)
-mf_label(vote, "DROITE")
+mf_map(vote, type = "choro", var = "DROITE", breaks = seuilD, pal =  hcl.colors(4,"Teal", rev = T), leg_pos = NA , border = NA)
+mf_label(vote, "DROITE", halo = T)
 mf_layout("DROITE", credits = "pv électoral\nBondy, avril 2022")
 mf_inset_on (vote, pos = "topright")
 par(mar = c(2,2,2,2))
 hist(vote$DROITE, breaks = seuilD, col = hcl.colors(4,"Teal", rev = T), right = F,
      border = NA, main = "", xlab = "", ylab = "", axes = F)
 mf_inset_off()
-
 dev.off()
 ```
 
 ![](img/resultG.png)![](img/resultD.png)
 
 
+> QUESTION
+
+> Quelles sont les commandes permettant l'insertion du graphique ?
 

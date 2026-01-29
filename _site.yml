@@ -12,7 +12,7 @@ navbar:
     - text: "Correction"
       href: 05_correction.html 
     - text: "Donnees"
-      href: 06_Donnees.html 
+      href: 06_donnees.html 
     - text: "Traitement"
       href: 07_traitement.html   
     - text: "Resultat"

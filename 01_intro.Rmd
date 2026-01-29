@@ -31,7 +31,9 @@ Donc fini d'utiliser les outils ArcGIS, on part sur rStudio, R et éventuellemen
 # Déroulé
 
 ```{r}
+# lecture du fichier .csv (il est encodé UTF-8)
 data <- read.csv("data/deroule.csv", header = T, fileEncoding = "UTF-8")
+# Affichage du fichier avec mise en forme automatique
 knitr::kable(data)
 ```
 
@@ -44,12 +46,16 @@ Donc présentation du 3/04 par groupe du projet de projet.
 régime du contrôle continu, 
 
 Deux notes : 
+
 - une note cours (DST coeff 2, le jeudi 13 avril) 
+
 - et une note maison (+ les exercices pour moitié de la note maison)
 
 
 Le DST sera sur machine d'une durée de 2h :
+
 - un exercice sous Arcgis Pro (avec un rendu en .pdf) (10 pt) 
+
 - un QCM (10 pt)
 
 
@@ -63,11 +69,31 @@ Il s'agit de vos données pour la commune choisie.
 
 - valeurs foncières géolocalisées
 
+Le projet porte sur une thématique des défis et les données liées à ces défis, mais
+toujours sur la commune choisie au départ.
 
+## Communes choisies
 
-```{r, eval=FALSE}
-data <- st_read("data/construction.gpkg", "villes", delete_layer = T)
+```{r}
+# chargement des librairies nécessaires
+library(sf)
+library(mapview)
+# affichage des couches du gpkg
+st_layers("data/construction.gpkg")
+# chargement de la couche ville
+data <- st_read("data/construction.gpkg", "ville")
+# affichage de la couche ville
+mapview(data)
 ```
+
+
+
+Autre cartographie possible
+
+
+
+![](img/communesConstruction.png)
+
 
 # Bibliographie
 
