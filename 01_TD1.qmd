@@ -5,13 +5,15 @@ output:
   html: 
     number_sections: true
     toc: true
+    code-fold: true
+---li
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -97,7 +99,7 @@ library(sf)
 parcelle <- st_read ("data/dataCours1/cadastre-93010-parcelles.json")
 dpt <- st_read("data/dataCours1/communes.shp")
 bondy <- st_read("data/dataCours1/export.geojson")
-car <- st_read("data/gros/Filosofi2019_carreaux_200m_gpkg/carreaux_200m_met.gpkg")
+car <- st_read("data/gros/carreaux_200m_met.gpkg")
 ```
 
 ## Problèmes éventuels de géométries

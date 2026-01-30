@@ -5,6 +5,7 @@ output:
   html: 
     number_sections: true
     toc: true
+    code-fold: true
 ---
 
 ```{r setup, include=FALSE}
@@ -53,7 +54,8 @@ Il s'agit de vos données pour la commune choisie. Principalement :
 -   Filosofi
 
 ```{r, eval=FALSE}
-data <- st_read("data/construction.gpkg", "villes", delete_layer = T)
+insee <- read.csv("data/insee.csv", header = F)
+insee
 ```
 
 # Ressources
@@ -61,3 +63,9 @@ data <- st_read("data/construction.gpkg", "villes", delete_layer = T)
 <https://learn.arcgis.com/fr/gallery/#?p=arcgispro>
 
 https://framabook.org/r-et-espace/
+
+Données communales
+
+<https://www.data.gouv.fr/pages/donnees-geo>
+
+<https://www.insee.fr/fr/information/3544265>
