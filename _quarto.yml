@@ -9,29 +9,20 @@ website:
         href: intro.html
       - text: "Données"
         href: 01_TD1.html
-      - text: "Bases R"
-        href: 03_basesR.html 
-      - text: "R spatial"
-        href: 04_Rspatial.html
-      - text: "Correction"
-        href: 05_correction.html 
-      - text: "Donnees"
-        href: 06_Donnees.html 
-      - text: "Traitement"
-        href: 07_traitement.html   
-      - text: "Resultat"
-        href: 08_resultat.html   
-
-      - about.qmd
+      - text: "Projections"
+        href: 02_TD2.html 
+      - text: "Vecteurs"
+        href: 03_TD3.html
     right:
       - icon: fa-github
         href: https://github.com/beababa/beababa.github.io
 format:
   html:
-    theme: cosmo
-    css: styles.css
+    theme: simplex
+    css: css/styles.css
     toc: true
     code-fold: true
+    code-tools: true
 
 editor: visual
 

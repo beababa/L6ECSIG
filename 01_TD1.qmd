@@ -138,6 +138,7 @@ inter2 <- st_intersection(car, dpt)
 # Enregistrement dans un gpkg
 st_write(inter2,"data/dataCours1/car.gpkg", "dpt", delete_layer = T)
 st_write(inter1,"data/dataCours1/car.gpkg", "bondy", delete_layer = T)
+st_write(bondy [, c("name", "population", "ref.INSEE")], "data/bondy.gpkg", "commune", delete_layer = T)
 ```
 
 ## Carto
