@@ -1,6 +1,5 @@
 ---
 title: "Introduction"
-author: "B Maranget"
 output: 
   html: 
     number_sections: true
@@ -52,12 +51,39 @@ Il s'agit de vos données pour la commune choisie. Principalement :
 
 -   Filosofi
 
-```{r, eval=FALSE}
-data <- st_read("data/construction.gpkg", "villes", delete_layer = T)
+-   communes choisies
+
+```{r, eval=TRUE}
+choix <- read.csv("data/codeINSEEetudiant.csv")
+choix <- c(choix$choix.de.la.commune..code.INSEE., choix$choix.de.la.commune..code.INSEE..1)
+# on enlève les NA et les villes identiques
+choix <- unique(choix[!is.na(choix)])
+# on récupère la géométrie des vilels
+#https://geo.api.gouv.fr/communes?code=44109&format=geojson&geometry=contour
+library(sf)
+filosofi <- st_read("data/gros/carreaux_200m_met.gpkg")
+choisir <- function(code){
+  data <- filosofi [grep(code, filosofi$lcog_geo),]
+  st_write(data  , "data/construction.gpkg", code, delete_layer = T)
+}
+res <- lapply(choix, choisir)
+```
+
+```{r}
+library(mapsf)
+mf_init(filosofi)
+mf_map(res[[1]], col = "red")
+for (ind in 2:35){
+  mf_map(res [[ind]], add = T, col = "red")
+}
+```
+
+```{r}
+
 ```
 
 # Ressources
 
 <https://learn.arcgis.com/fr/gallery/#?p=arcgispro>
 
-https://framabook.org/r-et-espace/
+<https://framabook.org/r-et-espace/>
