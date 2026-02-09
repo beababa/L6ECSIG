@@ -1,12 +1,10 @@
 ---
 title: "Recherche de données"
-author: "B Maranget"
 output: 
   html: 
     number_sections: true
     toc: true
     code-fold: true
----li
 ---
 
 ```{r setup, include=FALSE}
@@ -25,6 +23,12 @@ Rechercher de la donnée
 
 Parcourir le cours du groupe 3 et donner les 3 types de plateforme de données présentées.
 
+-   copernic hub =\> raster
+
+-   lidar =\> raster
+
+-   data.gouv =\> vecteur
+
 Le présent cours ne portera que sur des données vectorielles.
 
 ```{r}
@@ -42,7 +46,7 @@ clic droit sur couche / propriétés de la couche / source / référence spatial
 
 ![](img/tag.png)
 
--   overpasss (https://overpass-turbo.eu/)
+-   overpasss (<https://overpass-turbo.eu/>)
 
 ![](img/osm.png)
 
@@ -50,7 +54,9 @@ clic droit sur couche / propriétés de la couche / source / référence spatial
 
 -   Visionner le carroyage
 
-https://www.insee.fr/fr/outil-interactif/7737357/map.html
+<https://www.insee.fr/fr/outil-interactif/7737357/map.html>
+
+pas de requêteur
 
 Voir 200 m ou 1 km (en cours télécharger le 1 km, à la maison le 200 m)
 
@@ -58,13 +64,13 @@ Voir 200 m ou 1 km (en cours télécharger le 1 km, à la maison le 200 m)
 
 -   date
 
-https://www.data.gouv.fr/datasets/revenus-pauvrete-et-niveau-de-vie-donnees-carroyees/discussions
+<https://www.data.gouv.fr/datasets/revenus-pauvrete-et-niveau-de-vie-donnees-carroyees/discussions>
 
--   chercher le carroyage de 2018 à partir de : data.gouv / insee / le moteur de recherche
+Chercher le carroyage de 2018 à partir de : data.gouv / insee / le moteur de recherche
 
 On doit tomber sur :
 
-https://www.insee.fr/fr/statistiques/7655475?sommaire=7655515
+<https://www.insee.fr/fr/statistiques/7655475?sommaire=7655515>
 
 ## Cadastre
 
@@ -132,6 +138,7 @@ inter2 <- st_intersection(car, dpt)
 # Enregistrement dans un gpkg
 st_write(inter2,"data/dataCours1/car.gpkg", "dpt", delete_layer = T)
 st_write(inter1,"data/dataCours1/car.gpkg", "bondy", delete_layer = T)
+st_write(bondy [, c("name", "population", "ref.INSEE")], "data/bondy.gpkg", "commune", delete_layer = T)
 ```
 
 ## Carto

@@ -1,6 +1,5 @@
 ---
 title: "Introduction"
-author: "B Maranget"
 output: 
   html: 
     number_sections: true
@@ -25,6 +24,14 @@ L6ECSIG Construction et utilisation des SIG 2025/26
 L'idée du cours est de consolider les acquis de la L2 et de familiariser les étudiants à Arcgis pro et au codage avec R (une plateforme de versioning très utilisée.)
 
 La thématique utilisée est *Commune pauvre et/ou riche ?*
+
+# Données
+
+-   limites communes dans OSM
+
+-   carreaux filosofi 200 m (données infra communales)
+
+-   données ofgl (données communales)
 
 # Déroulé
 
@@ -53,16 +60,70 @@ Il s'agit de vos données pour la commune choisie. Principalement :
 
 -   Filosofi
 
+-   communes choisies
+
+```{r, eval=TRUE}
+choix <- read.csv("data/codeINSEEetudiant.csv")
+choix <- c(choix$choix.de.la.commune..code.INSEE., choix$choix.de.la.commune..code.INSEE..1)
+# on enlève les NA et les villes identiques
+choix <- unique(choix[!is.na(choix)])
+```
+
+
+```{r, eval=FALSE}
+library(sf)
+filosofi <- st_read("data/gros/carreaux_200m_met.gpkg")
+str(filosofi)
+filosofi$dpt <- substring(filosofi$lcog_geo,1,2) 
+dpt <- unique(substring(choix, 1,2)) 
+choisir <- function(dpt){
+  data <- filosofi [grep(dpt, filosofi$dpt),]
+  st_write(data  , "data/construction.gpkg", dpt, delete_layer = T)
+}
+res <- lapply(dpt, choisir)
+```
+
+
+Attention au 97
+
+Cartographie
+
+
+```{r}
+library(sf)
+library(mapsf)
+st_layers("data/construction.gpkg")
+couches <- st_layers("data/construction.gpkg")
+couches <- couches$name
+union <- NULL
+c <- couches [1]
+for (c in couches){
+  tmp <- st_read("data/construction.gpkg", c)
+  tmp <- st_union(tmp$geom)
+  tmp <- st_as_sf(tmp)
+  union <- rbind(tmp,union)
+}
+region <- st_read("data/regions-1000m.geojson")
+region <- st_transform(region, 2154)
+region <- region [c(6:26),]
+region
+mf_map(region, col = "wheat")
+mf_map(union, col = "red", border = NA, add = T)
+mf_layout("Choix étudiants", "Insee 2019\nCours L6ECSIG")
+```
+
 ```{r, eval=FALSE}
 insee <- read.csv("data/insee.csv", header = F)
 insee
+# on récupère la géométrie des vilels
+#https://geo.api.gouv.fr/communes?code=44109&format=geojson&geometry=contour
 ```
 
 # Ressources
 
 <https://learn.arcgis.com/fr/gallery/#?p=arcgispro>
 
-https://framabook.org/r-et-espace/
+<https://framabook.org/r-et-espace/>
 
 Données communales
 
