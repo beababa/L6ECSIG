@@ -46,9 +46,9 @@ régime du contrôle continu,
 
 Deux notes :
 
-\- une partiel
+-   une partiel
 
-\- une note maison (+ les exercices pour moitié de la note maison)
+-   une note maison (+ les exercices pour moitié de la note maison)
 
 Le partiel sera sur machine d'une durée de 1h30 : - un exercice sous Arcgis Pro (10 pt) - et un autre sous R(10 pt) (avec un rendu en .pdf)
 
@@ -67,66 +67,76 @@ choix <- read.csv("data/codeINSEEetudiant.csv")
 choix <- c(choix$choix.de.la.commune..code.INSEE., choix$choix.de.la.commune..code.INSEE..1)
 # on enlève les NA et les villes identiques
 choix <- unique(choix[!is.na(choix)])
+choix <- c(choix,93010)
+write.table(choix, "data/choix.csv", fileEncoding = "UTF-8", row.names = F, col.names = F)
 ```
 
+35 communes
+
+Récupération des carreaux 200 m pour les communes
 
 ```{r, eval=FALSE}
 library(sf)
-filosofi <- st_read("data/gros/carreaux_200m_met.gpkg")
-str(filosofi)
+filosofi <- st_read("data/gros/carreaux_200m_met.gpkg", quiet=T)
 filosofi$dpt <- substring(filosofi$lcog_geo,1,2) 
 dpt <- unique(substring(choix, 1,2)) 
 choisir <- function(dpt){
   data <- filosofi [grep(dpt, filosofi$dpt),]
-  st_write(data  , "data/construction.gpkg", dpt, delete_layer = T)
+  st_write(data  , "data/gros/construction.gpkg", dpt, delete_layer = T, quiet=T)
 }
 res <- lapply(dpt, choisir)
 ```
 
+Attention au 97, il faut prendre un autre fichier filosofi
 
-Attention au 97
+```{r}
+library(sf)
+mart <- st_read("data/gros/carreaux_200m_mart.gpkg", quiet=T)
+mart <- mart [mart$lcog_geo == choix [2],]
+st_write(mart,"data/gros/construction.gpkg", "97", delete_layer = T)
+```
 
-Cartographie
-
+# Cartographie
 
 ```{r}
 library(sf)
 library(mapsf)
-st_layers("data/construction.gpkg")
-couches <- st_layers("data/construction.gpkg")
+st_layers("data/gros/construction.gpkg")
+couches <- st_layers("data/gros/construction.gpkg")
+# 23
 couches <- couches$name
+couches <- couches [couches != '97']
+couches <- couches [couches != 'commune']
 union <- NULL
-c <- couches [1]
 for (c in couches){
-  tmp <- st_read("data/construction.gpkg", c)
+  tmp <- st_read("data/gros/construction.gpkg", c, quiet=T)
   tmp <- st_union(tmp$geom)
   tmp <- st_as_sf(tmp)
   union <- rbind(tmp,union)
 }
-region <- st_read("data/regions-1000m.geojson")
-region <- st_transform(region, 2154)
-region <- region [c(6:26),]
-region
-mf_map(region, col = "wheat")
-mf_map(union, col = "red", border = NA, add = T)
-mf_layout("Choix étudiants", "Insee 2019\nCours L6ECSIG")
+union <- st_convex_hull(union)
+dpt <- st_read("data/departements.geojson", quiet=T)
+dpt <- st_transform(dpt, 2154)
+dptSel <- dpt [dpt$code %in% couches,]
 ```
 
-```{r, eval=FALSE}
-insee <- read.csv("data/insee.csv", header = F)
-insee
-# on récupère la géométrie des vilels
-#https://geo.api.gouv.fr/communes?code=44109&format=geojson&geometry=contour
+```{r}
+mf_map(dpt, col = "wheat", border="grey")
+mf_map(union, col = "pink", border = NA, add = T)
+mf_label(dptSel, var = "nom", cex = 0.6, overlap = F, col ="red")
+mf_layout("Choix étudiants hors Martinique", "Insee 2019\nCours L6ECSIG")
 ```
 
 # Ressources
 
-<https://learn.arcgis.com/fr/gallery/#?p=arcgispro>
+[Argis, learn arcgis](https://learn.arcgis.com/fr/gallery/#?p=arcgispro)
 
-<https://framabook.org/r-et-espace/>
+[R la base](https://framabook.org/r-et-espace/)
 
 Données communales
 
-<https://www.data.gouv.fr/pages/donnees-geo>
+[Requeteur de carreaux sur site IDF](https://data.smartidf.services/explore/dataset/demographyref-france-donnees-carroyees-200m-millesime/information/?disjunctive.com_arm_code&disjunctive.year&disjunctive.com_code&disjunctive.com_arm_name&disjunctive.com_name&disjunctive.epci_name&disjunctive.epci_code&disjunctive.dep_name&disjunctive.dep_code&disjunctive.reg_name&disjunctive.reg_code)
 
-<https://www.insee.fr/fr/information/3544265>
+[data.gouv](https://www.data.gouv.fr/pages/donnees-geo)
+
+[insee](https://www.insee.fr/fr/information/3544265)

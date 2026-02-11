@@ -4,6 +4,7 @@ output:
   html: 
     number_sections: true
     toc: true
+    code-fold: true
 ---
 
 ```{r setup, include=FALSE}
@@ -21,7 +22,6 @@ En fait au delà de l'exercice pratique de géoréférencement, il s'agit de fai
 # 3 datums à connaître
 
 WGS84 / RGF93 / ETRS89
-
 
 # WGS84 et Lambert 93
 
@@ -41,9 +41,7 @@ Mais il y a beaucoup d'autres grilles, tous les CRS possibles sur une zone donn�
 
 Autre outil :
 
-
-
-http://bboxfinder.com/#0.000000,0.000000,0.000000,0.000000
+[bboxfinder](http://bboxfinder.com/#0.000000,0.000000,0.000000,0.000000)
 
 # Exercice 1 = trouver la projection des premiers carreaux insee
 
@@ -65,12 +63,9 @@ Image pb licence
 
 Prendre plutôt le fichier mise à dispo carreauPB.gpkg.
 
-
-
 ## Emprise des données
 
 ![](img/emprise.png)
-
 
 Il faut trouver un Y de 2 millions et un X de 500 M
 
@@ -84,11 +79,9 @@ voire même de mettre l'ordre de grandeur de l'emprise
 
 ### Au niveau du projet Arcgis
 
-![](img/unnames.png)
-### Couche
+![](img/unnames.png) \### Couche
 
 ![](img/arcgisProCar.png)![](img/arcgisPro2154.png)
-
 
 Qu'en déduire ?
 
@@ -98,10 +91,9 @@ On charge la donnée
 
 ```{r}
 library(sf)
-data <- st_read("data/gros/R_rfl09_LAEA1000.mid")
+data <- st_read("data/gros/R_rfl09_LAEA1000.mid", quiet=T)
 petit <- data [1:10,]  # pour faire des tests
 ```
-
 
 ```{r}
 # une bibliothèque permmet de suggérer le crs inexistant
@@ -113,7 +105,6 @@ st_crs (petit) <- 32439
 
 ![](img/32639.png)
 
-
 ```{r}
 # c'est un epsg qui concerne l'Azerbaidjan...
 petit <- st_transform(petit, crs = 4326)
@@ -122,7 +113,7 @@ petit
 
 Dommage, mais 46,21 ce n'est pas -4 / 10 ...
 
-Heureusement, cela fonctionne sous Qgis  de façon automatique.
+Heureusement, cela fonctionne sous Qgis de façon automatique.
 
 # Exercice 2 aire des carreaux
 
@@ -139,7 +130,6 @@ summary(data$aire)
 # pour cartographier on filtre sur les 1500 premiers carreaux
 st_write(data,"data/carreauPB.gpkg", "carLeger", delete_layer = T)
 ```
-
 
 ```{r}
 library(mapsf)

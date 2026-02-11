@@ -2,27 +2,26 @@ project:
   type: website
 
 website:
-  title: "cours L6ECSIG"
+  title: "L6ECSIG"
   navbar:
     left:
       - text: "Introduction"
         href: intro.html
       - text: "Données"
-        href: 01_TD1.html
+        href: 01_TD1.html  
       - text: "Projections"
         href: 02_TD2.html 
-      - text: "Vecteurs"
-        href: 03_TD3.html
+      - text: "GT Vecteurs"
+        href: 03_TD3.html 
     right:
       - icon: fa-github
         href: https://github.com/beababa/beababa.github.io
+        
 format:
   html:
-    theme: simplex
-    css: css/styles.css
+    theme: cosmo
     toc: true
     code-fold: true
-    code-tools: true
 
 editor: visual
 

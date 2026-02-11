@@ -1,0 +1,207 @@
+---
+title: "Complements"
+output: 
+  html: 
+    number_sections: true
+    toc: true
+    code-fold: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+Préparation des fichiers
+
+# Récup des communes via API
+
+```{r}
+choix <- read.table("data/choix.csv", fileEncoding = "UTF-8")
+choix <- as.vector(choix$V1)
+```
+
+
+
+pb JSON to GEOJSON
+
+à la main car pas de librairie simple trouvée et format=geojson ne fonctionne pas
+
+https://geo.api.gouv.fr/communes?code=93010&fields=code,nom&format=geojson$geometry=contour
+
+
+On déconstruit et on reconstruit X Y multipoint / poly / sf
+
+
+
+```{r}
+# modele : https://geo.api.gouv.fr/communes?code=93010&fields=code,nom,contour
+library(sf)
+library(httr2)
+df <- NULL
+pb <- NULL
+for (c in choix){
+  print(c)
+  url <- paste0("https://geo.api.gouv.fr/communes?code=", c, "&fields=code,nom,contour")
+  rqt <- request(url)
+  rep <- req_perform(rqt)
+  data <- resp_body_json(rep)
+  if (length(data)!=0) {
+      # on extrati pas à pas
+    #code <- c
+    nom <-  unlist(data [[1]][2])
+    data <- data [[1]][3]
+    data <- data[[1]][2]
+    data <- data [[1]][1]
+    data <- unlist(data)
+    Y <- data [c(seq(2,length(data), by = 2))]
+    X <- data [c(seq(1,length(data)-1, by = 2))]
+    pts <- NULL
+      for (ind in c(1:length(X))){
+        tmp <- c(X [ind],Y[ind])
+        pts <- rbind(tmp, pts)
+    }
+  mp <- st_multipoint(pts) 
+  poly <- st_cast(mp,"POLYGON")
+  dfTMP <- st_as_sf(data.frame(code=c, nom=nom, geom=st_sfc(poly)))
+  df <- rbind(dfTMP,df)
+  }else{
+    pb <- c(c,pb)
+  }
+}
+pb
+dfHorsMart <- df [substring(df$code,1,2)!=97,]
+library(mapsf)
+mf_map(dfHorsMart)
+st_crs (df) <- 4326
+df <- st_transform(df,2154)
+
+```
+
+cas 19e
+
+```{r}
+paris <- st_read("data/arrondissements.geojson", quiet=T)
+paris <- paris [paris$c_arinsee == 75119, c("c_arinsee", "l_ar")]
+names(paris)[1:2] <- c("code", "nom")
+paris <- st_transform(paris,2154)
+df <- rbind(df, paris)
+```
+
+```{r}
+df$dpt <- substring(df$code,1,2)
+table(df$dpt)
+st_write(df, "data/cours3.gpkg", "commune", delete_layer = T)
+```
+
+
+# Extraction lg
+
+
+```{r}
+commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
+```
+
+
+```{r}
+intersecterLimite <- function(commune){
+  car <- st_read("data/gros/construction.gpkg", unique(commune$dpt), quiet = T)
+  limite <- st_cast(st_geometry(commune), "MULTILINESTRING")
+  # afin de récupérer toute la géométrie du carré
+  car$intersecte <- sapply(st_intersects(car,limite ), length)
+  inter <- car [car$intersecte>0,]
+}
+res <- NULL
+insee <- commune$code
+insee <- insee [-grep("^97",insee)]
+for (i in insee){
+  c <- commune [commune$code == i,]
+  tmp <- intersecterLimite(c)
+  res <- rbind(tmp, res)
+}
+st_write(res, "data/cours3.gpkg", "carLimite", delete_layer = T, quiet = T)
+```
+
+Pour le 97
+
+
+```{r}
+car <- st_read("data/gros/carreaux_200m_mart.gpkg")
+st_crs(car)
+commune <- commune [grep("^97",commune$code),]
+commune <- st_transform(commune, 5490 )
+```
+
+
+```{r}
+mf_map(car)
+mf_map(commune, col = NA, border ="red",add = T)
+```
+
+
+```{r}
+
+mf_map(commune)
+mf_map(car,add = T)
+```
+
+
+```{r}
+limite <- st_cast(st_geometry(commune), "MULTILINESTRING")
+mf_map(limite)
+car$inter <- sapply(st_intersects(car,limite ), length)
+table(car$inter)
+inter <- car [car$inter>0,"idcar_200m"]
+st_write(inter,"data/cours3.gpkg", "carLimite97", delete_layer = T, quiet = T)
+```
+# Intersection
+
+
+```{r}
+st_layers("data/gros/construction.gpkg")
+commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
+commune <- commune [-grep("97", commune$dpt),]
+dpt <- commune$dpt
+# intersections
+inter <- NULL
+for (d in dpt){
+  car <- st_read("data/gros/construction.gpkg", d, quiet=T)
+  interTMP <- st_intersection(car, commune)
+  inter <- rbind(interTMP, inter)
+}
+st_write(inter, "data/cours3.gpkg", "car", delete_layer = T)
+```
+```{r}
+commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
+commune <- commune [grep("97", commune$dpt),]
+car <- st_read("data/gros/construction.gpkg", unique(commune$dpt), quiet=T)
+st_crs(car)
+commune <- st_transform(commune, 5490)
+inter <- st_intersection(car, commune)
+st_write(inter, "data/cours3.gpkg", "car97", delete_layer = T)
+```
+
+
+# fichiers cours 3
+
+uniquement men_pauv et recodage
+une couche par commune
+
+
+on charge le 93
+on affiche osm 
+on charge commune
+on sélectionne et on crée une nelle couche
+on découpe car par commune
+on décoche les couches
+
+
+```{r}
+
+```
+
