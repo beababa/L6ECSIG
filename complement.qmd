@@ -26,18 +26,13 @@ choix <- read.table("data/choix.csv", fileEncoding = "UTF-8")
 choix <- as.vector(choix$V1)
 ```
 
-
-
 pb JSON to GEOJSON
 
 à la main car pas de librairie simple trouvée et format=geojson ne fonctionne pas
 
-https://geo.api.gouv.fr/communes?code=93010&fields=code,nom&format=geojson$geometry=contour
-
+https://geo.api.gouv.fr/communes?code=93010&fields=code,nom&format=geojson\$geometry=contour
 
 On déconstruit et on reconstruit X Y multipoint / poly / sf
-
-
 
 ```{r}
 # modele : https://geo.api.gouv.fr/communes?code=93010&fields=code,nom,contour
@@ -96,19 +91,13 @@ df <- rbind(df, paris)
 ```{r}
 df$dpt <- substring(df$code,1,2)
 table(df$dpt)
-st_write(df, "data/cours3.gpkg", "commune", delete_layer = T)
+st_write(df, "data/cours3.gpkg", "commune", delete_layer = T, quiet = T)
 ```
-
 
 # Extraction lg
 
-
 ```{r}
 commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
-```
-
-
-```{r}
 intersecterLimite <- function(commune){
   car <- st_read("data/gros/construction.gpkg", unique(commune$dpt), quiet = T)
   limite <- st_cast(st_geometry(commune), "MULTILINESTRING")
@@ -129,10 +118,8 @@ st_write(res, "data/cours3.gpkg", "carLimite", delete_layer = T, quiet = T)
 
 Pour le 97
 
-
 ```{r}
 car <- st_read("data/gros/carreaux_200m_mart.gpkg")
-st_crs(car)
 commune <- commune [grep("^97",commune$code),]
 commune <- st_transform(commune, 5490 )
 ```
@@ -141,15 +128,16 @@ commune <- st_transform(commune, 5490 )
 ```{r}
 mf_map(car)
 mf_map(commune, col = NA, border ="red",add = T)
+mf_layout("2 communes en Martinique", "insee 2019\n Février 2026")
 ```
-
 
 ```{r}
-
 mf_map(commune)
 mf_map(car,add = T)
+mf_layout("Carreaux et 2 communes de Martinique", "insee 2019\n Février 2026")
 ```
 
+Intersection lg carreaux pour Martinique
 
 ```{r}
 limite <- st_cast(st_geometry(commune), "MULTILINESTRING")
@@ -159,8 +147,8 @@ table(car$inter)
 inter <- car [car$inter>0,"idcar_200m"]
 st_write(inter,"data/cours3.gpkg", "carLimite97", delete_layer = T, quiet = T)
 ```
-# Intersection
 
+# Intersection
 
 ```{r}
 st_layers("data/gros/construction.gpkg")
@@ -174,8 +162,9 @@ for (d in dpt){
   interTMP <- st_intersection(car, commune)
   inter <- rbind(interTMP, inter)
 }
-st_write(inter, "data/cours3.gpkg", "car", delete_layer = T)
+st_write(inter, "data/cours3.gpkg", "car", delete_layer = T, quiet = T)
 ```
+
 ```{r}
 commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
 commune <- commune [grep("97", commune$dpt),]
@@ -183,25 +172,13 @@ car <- st_read("data/gros/construction.gpkg", unique(commune$dpt), quiet=T)
 st_crs(car)
 commune <- st_transform(commune, 5490)
 inter <- st_intersection(car, commune)
-st_write(inter, "data/cours3.gpkg", "car97", delete_layer = T)
+st_write(inter, "data/cours3.gpkg", "car97", delete_layer = T, quiet = T)
 ```
-
 
 # fichiers cours 3
 
-uniquement men_pauv et recodage
-une couche par commune
+uniquement men_pauv et recodage une couche par commune
 
+on charge le 93 on affiche osm on charge commune on sélectionne et on crée une nelle couche on découpe car par commune on décoche les couches
 
-on charge le 93
-on affiche osm 
-on charge commune
-on sélectionne et on crée une nelle couche
-on découpe car par commune
-on décoche les couches
-
-
-```{r}
-
-```
 

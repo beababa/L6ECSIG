@@ -1,0 +1,146 @@
+---
+title: "Géotraitements rasters"
+output: 
+  html: 
+    number_sections: true
+    toc: true
+    code-fold: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+L'objectif est de comprendre pourquoi le carroyage filosofi ne recouvre pas tout l'espace.
+
+```{mermaid}
+flowchart LR
+  A[image raster] --> C{découper}
+  B[carreaux vecteur] --> C{découper}
+  C --> D[image hors carreau]
+```
+
+Comment s'appelle le schéma ci-dessus ?
+
+# Utiliser copernicus hub pour obtenir une image aérienne
+
+## Paramétrage
+
+Déterminer la zone, de quelle manière ?
+
+Quelle type d'image prendre ?
+
+![](img/copernicusHubrecherche.png) \## Téléchargement de la carte
+
+![](img/enregistremetnCoper.png) ![](img/enregistrementCopernicusHub.png)
+
+Justifier les options choisies :
+
+-   format image
+
+-   type de résolution
+
+-   projection
+
+# Etapes géotraitements
+
+## Géotraitement 1 = Reprojeter
+
+![](img/taillePixel.png) Quelle est la taille du pixel ? S'agit-il de m ?
+
+A part la taille du pixel, à quoi sert de reprojeter le raster.
+
+## Géotraitement 2 = Découper le raster
+
+2 découpages : aux limites de la commune, puis au carreau
+
+Plusieurs solutions possibles...
+
+### Sous R
+
+Données et intersection limite commune et carreau
+
+Chargement des couches : commune et carreaux
+
+```{r}
+library(sf)
+commune <- st_read("data/cours3.gpkg", "commune", quiet=T)
+bondy <- commune [commune$code == '93010',]
+car <- st_read("data/gros/construction.gpkg", "93", quiet=T)
+```
+
+Union des carreaux
+
+```{r}
+inter <- st_union(st_intersection(bondy,car))
+```
+
+Différence symétrique
+
+```{r}
+diff <- st_difference(bondy$geom, inter)
+```
+
+Cartographie
+
+```{r}
+library(mapsf)
+mf_map(diff)
+mf_map(bondy, add = T, col = NA)
+mf_layout("Carreaux manquants sur Bondy","Filosofi 2019\nIGN 2026")
+```
+
+### Le shéma de l'opération
+
+```{mermaid}
+flowchart LR
+  A[car] --> C{intersecter}
+  B[commune] --> C{intersecter}
+  C --> D[inter]
+  D --> E{fusion}
+  E --> F[car fusionnés]
+  F --> H{difference}
+  B[commune] --> H
+  H --> I(carreaux absents)
+```
+
+### Traitement par lot
+
+
+```{r}
+car <- st_read ("data/cours3.gpkg", "car", quiet=T)
+table(car$dpt.1)
+union <- st_union(car)
+diff <-  NULL
+commune <- commune[commune$dpt != 97,]
+insee <- commune$code
+insee 
+for (i in insee){
+  print(i)
+  tmp <- st_difference(commune [commune$code == i,], car$geom)
+  diff <- c(tmp, diff)
+}
+mf_map(tmp)
+str(diff)
+st_write(diff, "data/cours4.gpkg4", "carreau_manquant", delete_layer = T)
+```
+
+## Géotraitement 3 : convertir la couleur du raster en niveaux de gris
+
+Si on prend l'indice ndvi est-ce nécessaire ?
+
+![](img/ndvi.png) \## Géotraitement 4 : seuillage
+
+## Géotraitement 5 : raster =\> vecteur
+
+puis taille et lissage
+
+# Schéma complet
+
+A faire pour la semaine prochaine
