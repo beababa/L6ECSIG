@@ -36,7 +36,9 @@ Déterminer la zone, de quelle manière ?
 
 Quelle type d'image prendre ?
 
-![](img/copernicusHubrecherche.png) \## Téléchargement de la carte
+![](img/copernicusHubrecherche.png) 
+
+Téléchargement de la carte
 
 ![](img/enregistremetnCoper.png) ![](img/enregistrementCopernicusHub.png)
 
@@ -54,7 +56,7 @@ Justifier les options choisies :
 
 ![](img/taillePixel.png) Quelle est la taille du pixel ? S'agit-il de m ?
 
-A part la taille du pixel, à quoi sert de reprojeter le raster.
+A part la taille du pixel, à quoi sert de reprojeter le raster ?
 
 ## Géotraitement 2 = Découper le raster
 
@@ -62,7 +64,14 @@ A part la taille du pixel, à quoi sert de reprojeter le raster.
 
 Plusieurs solutions possibles...
 
-### Sous R
+### Carreaux manquants 
+
+L'extraction des carreaux manquants est faite sous R par département et fournie aux étudiants.
+
+La question à régler est sur l'importance des carreaux manquants. On fait un test sur 
+Bondy, puis une comparaison par dpt et enfin le cas spécifique de la Martinique.
+
+#### Bondy
 
 Données et intersection limite commune et carreau
 
@@ -96,7 +105,7 @@ mf_map(bondy, add = T, col = NA)
 mf_layout("Carreaux manquants sur Bondy","Filosofi 2019\nIGN 2026")
 ```
 
-### Le shéma de l'opération
+#### Le shéma de l'opération
 
 ```{mermaid}
 flowchart LR
@@ -110,34 +119,89 @@ flowchart LR
   H --> I(carreaux absents)
 ```
 
-### Traitement par lot
+#### Traitement par lot
+
+On procéde par dpt
 
 
 ```{r}
 car <- st_read ("data/cours3.gpkg", "car", quiet=T)
 table(car$dpt.1)
-union <- st_union(car)
+aggCar <- aggregate(car [, c( "dpt.1")], by = list(car$dpt.1), length)
+aggCommune <- aggregate(commune [, "dpt"], by=list(commune$dpt), length)
+names(aggCar)[1:2] <- c("dpt", "nb")
+names(aggCommune)[1:2] <- c("dpt", "nb")
 diff <-  NULL
 commune <- commune[commune$dpt != 97,]
-insee <- commune$code
-insee 
-for (i in insee){
-  print(i)
-  tmp <- st_difference(commune [commune$code == i,], car$geom)
-  diff <- c(tmp, diff)
+dpt <- commune$dpt
+for (d in dpt){
+  print(d)
+  tmp <- st_difference(aggCommune [aggCommune$dpt == d, c("dpt")], aggCar [aggCar$dpt == d, c("dpt")])
+  diff <- rbind(tmp, diff)
 }
-mf_map(tmp)
-str(diff)
-st_write(diff, "data/cours4.gpkg4", "carreau_manquant", delete_layer = T)
+st_write(diff [,c("dpt")], "data/cours4.gpkg", "carreau_manquant", delete_layer = T)
+```
+On fait le rapport carreaux manquants / carreaux présents par dpt
+
+
+```{r}
+carDpt <- aggCar [,c("dpt", "nb"), drop = T]
+diff$nb <- st_area(diff)/(200*200)
+library(units)
+diff$nb <- drop_units(diff$nb)
+diff$nb <- round(diff$nb,0)
+carAbs <- diff [,c("dpt", "nb"), drop=T]
+jointure <- merge(carDpt, carAbs, by = "dpt", all.x = T, all.y=T)
+names(jointure) <-  c("dpt", "carTot", "carAbs")
+jointure$rapport <- round((jointure$carAbs/jointure$carTot)/100,2)
+hist(jointure$rapport, main = "Répartition % carreaux absents")
 ```
 
-## Géotraitement 3 : convertir la couleur du raster en niveaux de gris
+
+```{r}
+plot(log(jointure$carTot),log( jointure$carAbs), main = "rapport carreaux présents / absents par dpt")
+text(log(jointure$carTot),log( jointure$carAbs), jointure$dpt, pos = 4)
+```
+
+```{r}
+car$dpt.1 <- as.integer(car$dpt.1)
+par(mfrow=c(1,2))
+for (d in c(93,94)){
+  mf_map(car [car$dpt.1== d,])
+  mf_map(commune [commune$dpt == d,], add = T, col=NA, border="cadetblue4", lwd = 4)
+  mf_map(diff [diff$dpt.1 == d,], col="red", add = T)
+  mf_layout (paste0("Carreaux absents sur le dpt ", d), "insee 2018, IGN 2026")
+}
+```
+
+#### Cas de la Martinique
+
+```{r}
+car <- st_read ("data/cours3.gpkg", "car97", quiet=T)
+st_crs(car)
+commune <- st_read("data/cours3.gpkg", "commune", quiet=T)
+commune <- commune[commune$dpt == 97,]
+commune <- st_transform(commune, 5490 )
+diff97 <- st_difference(commune [, c("dpt")], car [, c("dpt")])
+st_write(diff [,c("dpt")], "data/cours4.gpkg", "carreau_manquant97", delete_layer = T, quiet = T)
+```
+
+```{r}
+  mf_map(car)
+  mf_map(commune, add = T, col=NA, border="cadetblue4", lwd = 4)
+ # mf_map(diff97, col="red", add = T)
+  mf_layout ("Carreaux absents sur la Martinique ", "insee 2018, IGN 2026")
+```
+ 
+
+
+## Géotraitement 3 = convertir la couleur du raster en niveaux de gris
 
 Si on prend l'indice ndvi est-ce nécessaire ?
 
 ![](img/ndvi.png) \## Géotraitement 4 : seuillage
 
-## Géotraitement 5 : raster =\> vecteur
+## Géotraitement 5 = raster => vecteur
 
 puis taille et lissage
 
