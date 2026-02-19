@@ -1,0 +1,13 @@
+Utilisation GDB
+
+- sélectionner sa commune / ses carreaux
+
+- créer une couche à partir de la sélection
+
+- exporter cette couche dans la .gdb
+
+
+
+Copernicus hub
+
+chercher une image de votre commune et la télécharger. Attention il faut qu'elle soit géoréférencée.
