@@ -13,6 +13,8 @@ website:
         href: 02_TD2.html 
       - text: "GT Vecteurs"
         href: 03_TD3.html 
+      - text: "GT Rasters"
+        href: 04_TD4.html 
     right:
       - icon: fa-github
         href: https://github.com/beababa/beababa.github.io

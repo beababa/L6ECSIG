@@ -36,7 +36,7 @@ Déterminer la zone, de quelle manière ?
 
 Quelle type d'image prendre ?
 
-![](img/copernicusHubrecherche.png) 
+![](img/copernicusHubrecherche.png)
 
 Téléchargement de la carte
 
@@ -54,22 +54,24 @@ Justifier les options choisies :
 
 ## Géotraitement 1 = Reprojeter
 
-![](img/taillePixel.png) Quelle est la taille du pixel ? S'agit-il de m ?
+![](img/taillePixel.png)
+
+Quelle est la taille du pixel ? S'agit-il de mètres ?
 
 A part la taille du pixel, à quoi sert de reprojeter le raster ?
 
 ## Géotraitement 2 = Découper le raster
 
-2 découpages : aux limites de la commune, puis au carreau
+On se sert des carreaux manquants pour découper le raster dessus.
 
-Plusieurs solutions possibles...
 
-### Carreaux manquants 
+
+
+### Carreaux manquants
 
 L'extraction des carreaux manquants est faite sous R par département et fournie aux étudiants.
 
-La question à régler est sur l'importance des carreaux manquants. On fait un test sur 
-Bondy, puis une comparaison par dpt et enfin le cas spécifique de la Martinique.
+La question à régler est sur l'importance des carreaux manquants. On fait un test sur Bondy, puis une comparaison par dpt et enfin le cas spécifique de la Martinique.
 
 #### Bondy
 
@@ -84,13 +86,13 @@ bondy <- commune [commune$code == '93010',]
 car <- st_read("data/gros/construction.gpkg", "93", quiet=T)
 ```
 
-Union des carreaux
+Intersection Bondy - carreaux dpt puis union des carreaux pour accélérer les traitements
 
 ```{r}
 inter <- st_union(st_intersection(bondy,car))
 ```
 
-Différence symétrique
+Différence symétrique entre la limite communale
 
 ```{r}
 diff <- st_difference(bondy$geom, inter)
@@ -123,54 +125,44 @@ flowchart LR
 
 On procéde par dpt
 
-
 ```{r}
+commune <- st_read("data/cours3.gpkg", "commune", quiet=T)
 car <- st_read ("data/cours3.gpkg", "car", quiet=T)
-table(car$dpt.1)
+# on agrège les carreaux par dpt
 aggCar <- aggregate(car [, c( "dpt.1")], by = list(car$dpt.1), length)
+# même opération sur les communes
 aggCommune <- aggregate(commune [, "dpt"], by=list(commune$dpt), length)
 names(aggCar)[1:2] <- c("dpt", "nb")
 names(aggCommune)[1:2] <- c("dpt", "nb")
 diff <-  NULL
 commune <- commune[commune$dpt != 97,]
-dpt <- commune$dpt
+dpt <- unique(commune$dpt)
 for (d in dpt){
-  print(d)
+  #print(d)
   tmp <- st_difference(aggCommune [aggCommune$dpt == d, c("dpt")], aggCar [aggCar$dpt == d, c("dpt")])
   diff <- rbind(tmp, diff)
 }
-st_write(diff [,c("dpt")], "data/cours4.gpkg", "carreau_manquant", delete_layer = T)
 ```
-On fait le rapport carreaux manquants / carreaux présents par dpt
+
+
 
 
 ```{r}
-carDpt <- aggCar [,c("dpt", "nb"), drop = T]
-diff$nb <- st_area(diff)/(200*200)
-library(units)
-diff$nb <- drop_units(diff$nb)
-diff$nb <- round(diff$nb,0)
-carAbs <- diff [,c("dpt", "nb"), drop=T]
-jointure <- merge(carDpt, carAbs, by = "dpt", all.x = T, all.y=T)
-names(jointure) <-  c("dpt", "carTot", "carAbs")
-jointure$rapport <- round((jointure$carAbs/jointure$carTot)/100,2)
-hist(jointure$rapport, main = "Répartition % carreaux absents")
+#diff <- st_cast(diff,"POLYGON")
+inter <- st_intersection(diff, commune)
+inter <- inter [, c("code", "nom")]
+st_write(inter , "data/cours4.gpkg", "carreau_manquant", delete_layer = T)
 ```
 
-
-```{r}
-plot(log(jointure$carTot),log( jointure$carAbs), main = "rapport carreaux présents / absents par dpt")
-text(log(jointure$carTot),log( jointure$carAbs), jointure$dpt, pos = 4)
-```
 
 ```{r}
 car$dpt.1 <- as.integer(car$dpt.1)
 par(mfrow=c(1,2))
 for (d in c(93,94)){
-  mf_map(car [car$dpt.1== d,])
-  mf_map(commune [commune$dpt == d,], add = T, col=NA, border="cadetblue4", lwd = 4)
+  #mf_map(car [car$dpt.1== d,])
+  mf_map(commune [commune$dpt == d,], col=NA, border="cadetblue4", lwd = 4)
   mf_map(diff [diff$dpt.1 == d,], col="red", add = T)
-  mf_layout (paste0("Carreaux absents sur le dpt ", d), "insee 2018, IGN 2026")
+  mf_layout (paste0("Carreaux absents comm du dpt ", d), "insee 2018, IGN 2026")
 }
 ```
 
@@ -182,28 +174,54 @@ st_crs(car)
 commune <- st_read("data/cours3.gpkg", "commune", quiet=T)
 commune <- commune[commune$dpt == 97,]
 commune <- st_transform(commune, 5490 )
-diff97 <- st_difference(commune [, c("dpt")], car [, c("dpt")])
-st_write(diff [,c("dpt")], "data/cours4.gpkg", "carreau_manquant97", delete_layer = T, quiet = T)
+agg <- aggregate (commune [, c("dpt")], by = list(commune$dpt), length)
+agg2 <- aggregate (car [,c("dpt")], by = list(car$dpt), length)
+diff97 <- st_difference(agg, agg2 )
+# on garde par commune
+inter <- st_intersection(diff97, commune [, c("code", "nom")])
+inter <- inter [,c("code", "nom")]
+inter <- st_cast(inter,"POLYGON")
+st_write(inter, "data/cours4b.gpkg", "carreau_manquant97", delete_layer = T, quiet = T)
 ```
 
 ```{r}
-  mf_map(car)
-  mf_map(commune, add = T, col=NA, border="cadetblue4", lwd = 4)
- # mf_map(diff97, col="red", add = T)
-  mf_layout ("Carreaux absents sur la Martinique ", "insee 2018, IGN 2026")
+mf_map(inter, col = "red")
+#mf_map(car, add = T)  
+mf_map(commune, add = T, col=NA, border="cadetblue4", lwd = 4)
+# mf_map(diff97, col="red", add = T)
+mf_layout ("Carreaux absents sur la Martinique ", "insee 2018, IGN 2026")
 ```
- 
 
+
+### Découper le raster
+
+
+Essayer de découper le raster à la commune, puis au carreau manquant
 
 ## Géotraitement 3 = convertir la couleur du raster en niveaux de gris
 
+outil *Découper le raster*
+
+
 Si on prend l'indice ndvi est-ce nécessaire ?
 
-![](img/ndvi.png) \## Géotraitement 4 : seuillage
+![](img/ndvi.png)
 
-## Géotraitement 5 = raster => vecteur
+## Géotraitement 4 : seuillage
+
+Outil informations sur l'image, quelles valeurs à retenir ?
+
+
+## Géotraitement 5 = raster =\> vecteur
+
+
+outil Raster vers polygone
 
 puis taille et lissage
+
+calculer la géométrie (clic droit sur table attributaire)
+
+puis lisser un polygone
 
 # Schéma complet
 

@@ -126,6 +126,7 @@ commune <- st_transform(commune, 5490 )
 
 
 ```{r}
+library(mapsf)
 mf_map(car)
 mf_map(commune, col = NA, border ="red",add = T)
 mf_layout("2 communes en Martinique", "insee 2019\n Février 2026")
@@ -150,6 +151,8 @@ st_write(inter,"data/cours3.gpkg", "carLimite97", delete_layer = T, quiet = T)
 
 # Intersection
 
+## Sans la Martinique
+
 ```{r}
 st_layers("data/gros/construction.gpkg")
 commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
@@ -165,6 +168,9 @@ for (d in dpt){
 st_write(inter, "data/cours3.gpkg", "car", delete_layer = T, quiet = T)
 ```
 
+Martinique
+
+
 ```{r}
 commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
 commune <- commune [grep("97", commune$dpt),]
@@ -174,6 +180,12 @@ commune <- st_transform(commune, 5490)
 inter <- st_intersection(car, commune)
 st_write(inter, "data/cours3.gpkg", "car97", delete_layer = T, quiet = T)
 ```
+
+
+```{r}
+mf_map(inter)
+```
+
 
 # fichiers cours 3
 

@@ -91,8 +91,9 @@ Attention au 97, il faut prendre un autre fichier filosofi
 
 ```{r}
 library(sf)
+choix <- read.csv("data/choix.csv", header = F)
+choix <- choix [grep("^97", choix$V1),]
 mart <- st_read("data/gros/carreaux_200m_mart.gpkg", quiet=T)
-mart <- mart [mart$lcog_geo == choix [2],]
 st_write(mart,"data/gros/construction.gpkg", "97", delete_layer = T)
 ```
 

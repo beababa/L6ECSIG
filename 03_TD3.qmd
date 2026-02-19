@@ -27,7 +27,6 @@ Une méthode très utile pour ces opérations, qu'elles soient sur du vecteur ou
 
 # Schéma de géotraitement
 
-
 ## Géotraitement 1 = Délimiter
 
 ```{mermaid}
@@ -46,7 +45,6 @@ flowchart LR
   C --> D[carreaux combinés]
 ```
 
-
 ## Géotraitement 3 = Fusionner
 
 ```{mermaid}
@@ -57,19 +55,15 @@ flowchart LR
   D --> E[carreaux agrégés]
 ```
 
-
-
-
 # Données
 
-- les carreaux par dpt dans construction.gpkg (gros fichier = 260 M°)
+-   les carreaux par dpt dans construction.gpkg (gros fichier = 260 M°)
 
-- les polygones des communes dans cours3.gpkg
+-   les polygones des communes dans cours3.gpkg
 
-- les carreaux positionnés sur les limites des communes sont dans cours3.gpkg
+-   les carreaux positionnés sur les limites des communes sont dans cours3.gpkg
 
 Attention, il y a 2 communes en Martinique, la projection est différente (5490)
-
 
 # Délimiter
 
@@ -90,9 +84,7 @@ mf_map(inter, col = NA, border = "darkgoldenrod")
 mf_layout("Découpage carreaux sur Bondy", "insee 2021\nOSM")
 ```
 
-
 Egalement, zones tampons, enveloppes
-
 
 ## Dans Arcgis
 
@@ -116,19 +108,17 @@ carLimite <- st_read("data/cours3.gpkg", "carLimite", quiet=T)
 carLimiteBondy <- carLimite [grep("93010", carLimite$lcog_geo),]
 ```
 
-
 ```{r}
 mf_map(car, col= "cadetblue1", border = "yellow")
 mf_map(carLimiteBondy, border = "deeppink4", col = NA, add = T)
 mf_layout("Carreaux entiers incluant Bondy", "Insee 2021\nOSM2026")
 ```
 
-
 ## Dans Arcgis
 
 étape 1 : on ne garde que la couche résultant de la délimitation
 
-étape 2 : on charge les carreaux limites 
+étape 2 : on charge les carreaux limites
 
 étape 3 : sélection attributaire (CTRL + T) et créer une nelle couche
 
@@ -144,9 +134,7 @@ Faire la même chose avec la découpe
 
 étape 5 : réunir les 2 couches, trouver l'outil et l'utiliser
 
-
 # Fusionner
-
 
 phase préparatoire
 
@@ -188,10 +176,6 @@ Etape 1 : supprimer les couches inutiles
 
 Etape 2 : recoder le champs menage pauvre
 
-
 ![](img/recodage.png)
 
-
 Etape 3 : quel outil pour fusionner en fonction des attributs ?
-
-
