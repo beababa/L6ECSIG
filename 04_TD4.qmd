@@ -64,9 +64,6 @@ A part la taille du pixel, à quoi sert de reprojeter le raster ?
 
 On se sert des carreaux manquants pour découper le raster dessus.
 
-
-
-
 ### Carreaux manquants
 
 L'extraction des carreaux manquants est faite sous R par département et fournie aux étudiants.
@@ -86,13 +83,16 @@ bondy <- commune [commune$code == '93010',]
 car <- st_read("data/gros/construction.gpkg", "93", quiet=T)
 ```
 
-Intersection Bondy - carreaux dpt puis union des carreaux pour accélérer les traitements
+Intersection Bondy - carreaux dpt puis union des carreaux pour accélérer les traitements.
+
+En effet les traitements spatiaux sur des polygones peuvent être très lents, autant
+traiter une union des carreaux plutôt que chaque carreau séparé.
 
 ```{r}
 inter <- st_union(st_intersection(bondy,car))
 ```
 
-Différence symétrique entre la limite communale
+Différence symétrique entre la zone communale et le gros carreau
 
 ```{r}
 diff <- st_difference(bondy$geom, inter)
@@ -123,7 +123,7 @@ flowchart LR
 
 #### Traitement par lot
 
-On procéde par dpt
+On procéde par dpt, pour éviter d'avoir des délais de traitement trop longs.
 
 ```{r}
 commune <- st_read("data/cours3.gpkg", "commune", quiet=T)
@@ -144,16 +144,12 @@ for (d in dpt){
 }
 ```
 
-
-
-
 ```{r}
 #diff <- st_cast(diff,"POLYGON")
 inter <- st_intersection(diff, commune)
 inter <- inter [, c("code", "nom")]
 st_write(inter , "data/cours4.gpkg", "carreau_manquant", delete_layer = T)
 ```
-
 
 ```{r}
 car$dpt.1 <- as.integer(car$dpt.1)
@@ -192,16 +188,19 @@ mf_map(commune, add = T, col=NA, border="cadetblue4", lwd = 4)
 mf_layout ("Carreaux absents sur la Martinique ", "insee 2018, IGN 2026")
 ```
 
-
 ### Découper le raster
 
-
 Essayer de découper le raster à la commune, puis au carreau manquant
+
+
+![](img/decouperRaster.png)
+
+Essayer avec ou sans l'option *utiliser la géométrie en entrée*... 
+
 
 ## Géotraitement 3 = convertir la couleur du raster en niveaux de gris
 
 outil *Découper le raster*
-
 
 Si on prend l'indice ndvi est-ce nécessaire ?
 
@@ -211,9 +210,7 @@ Si on prend l'indice ndvi est-ce nécessaire ?
 
 Outil informations sur l'image, quelles valeurs à retenir ?
 
-
 ## Géotraitement 5 = raster =\> vecteur
-
 
 outil Raster vers polygone
 
