@@ -67,11 +67,11 @@ choix <- read.csv("data/codeINSEEetudiant.csv")
 choix <- c(choix$choix.de.la.commune..code.INSEE., choix$choix.de.la.commune..code.INSEE..1)
 # on enlève les NA et les villes identiques
 choix <- unique(choix[!is.na(choix)])
-choix <- c(choix,93010,70550,60508,78311)
+choix <- c(choix,93010,70550,60508,78311,93045,93005,13040,92044)
 write.table(choix, "data/choix.csv", fileEncoding = "UTF-8", row.names = F, col.names = F)
 ```
 
-38 communes + Bondy
+42 communes + Bondy
 
 Récupération des carreaux 200 m pour les communes
 

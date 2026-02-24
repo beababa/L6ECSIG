@@ -91,13 +91,13 @@ df <- rbind(df, paris)
 ```{r}
 df$dpt <- substring(df$code,1,2)
 table(df$dpt)
-st_write(df, "data/cours3.gpkg", "commune", delete_layer = T, quiet = T)
+st_write(df, "data/cours5.gpkg", "commune", delete_layer = T, quiet = T)
 ```
 
 # Extraction lg
 
 ```{r}
-commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
+commune <- st_read("data/cours5.gpkg", "commune", quiet = T)
 intersecterLimite <- function(commune){
   car <- st_read("data/gros/construction.gpkg", unique(commune$dpt), quiet = T)
   limite <- st_cast(st_geometry(commune), "MULTILINESTRING")
@@ -123,7 +123,6 @@ car <- st_read("data/gros/carreaux_200m_mart.gpkg")
 commune <- commune [grep("^97",commune$code),]
 commune <- st_transform(commune, 5490 )
 ```
-
 
 ```{r}
 library(mapsf)
@@ -154,8 +153,7 @@ st_write(inter,"data/cours3.gpkg", "carLimite97", delete_layer = T, quiet = T)
 ## Sans la Martinique
 
 ```{r}
-st_layers("data/gros/construction.gpkg")
-commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
+commune <- st_read("data/cours5.gpkg", "commune", quiet = T)
 commune <- commune [-grep("97", commune$dpt),]
 dpt <- commune$dpt
 # intersections
@@ -165,27 +163,24 @@ for (d in dpt){
   interTMP <- st_intersection(car, commune)
   inter <- rbind(interTMP, inter)
 }
-st_write(inter, "data/cours3.gpkg", "car", delete_layer = T, quiet = T)
+st_write(inter, "data/cours5.gpkg", "car", delete_layer = T, quiet = T)
 ```
 
 Martinique
 
-
 ```{r}
-commune <- st_read("data/cours3.gpkg", "commune", quiet = T)
+commune <- st_read("data/cours5.gpkg", "commune", quiet = T)
 commune <- commune [grep("97", commune$dpt),]
 car <- st_read("data/gros/construction.gpkg", unique(commune$dpt), quiet=T)
 st_crs(car)
 commune <- st_transform(commune, 5490)
 inter <- st_intersection(car, commune)
-st_write(inter, "data/cours3.gpkg", "car97", delete_layer = T, quiet = T)
+st_write(inter, "data/cours5.gpkg", "car97", delete_layer = T, quiet = T)
 ```
-
 
 ```{r}
 mf_map(inter)
 ```
-
 
 # fichiers cours 3
 
@@ -193,4 +188,35 @@ uniquement men_pauv et recodage une couche par commune
 
 on charge le 93 on affiche osm on charge commune on sélectionne et on crée une nelle couche on découpe car par commune on décoche les couches
 
+# cours 4
 
+On fait le rapport carreaux manquants / carreaux présents par dpt
+
+```{r}
+car <- st_read("data/cours5.gpkg", "car")
+# 43 M carraux
+carDpt <- as.data.frame(table(car$dpt) )
+names(carDpt) <- c("dpt", "nb")
+diff <- st_read("data/cours5.gpkg", "carreau_manquant")
+diff$nb <- st_area(diff)/(190*190)
+# contrôle sur Bondy
+diff [diff$code == 93010, "nb"]
+# envrion 7 carreaux
+library(units)
+diff$nb <- drop_units(diff$nb)
+diff$nb <- round(diff$nb,0)
+(sum(diff$nb)/ length(car$idcar_200m)) * 100
+# plus du tiers des carreaux absents
+diff$dpt <- substring(diff$code,1,2)
+aggDiff <- aggregate(diff [,c("nb"), drop=T], by = list(diff$dpt), sum)
+names(aggDiff) <- c("dpt", "nb")
+jointure <- merge(carDpt, aggDiff, by = "dpt", all.x = T, all.y=T)
+names(jointure) <-  c("dpt", "carTot", "carAbs")
+jointure$rapport <- (round((jointure$carAbs)/(jointure$carTot),2))*100
+```
+
+```{r}
+plot(jointure$carTot, jointure$carAbs, log="xy", main = "rapport carreaux présents / absents par dpt", )
+text(jointure$carTot,jointure$carAbs, jointure$dpt, pos = 4)
+```
+Tous les dpts au dessus de la droite de régression ont plus de carreaux absents que de carreaux totaux.
