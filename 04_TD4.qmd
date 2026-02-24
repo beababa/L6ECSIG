@@ -214,9 +214,9 @@ outil Raster vers polygone
 
 puis taille et lissage
 
-calculer la géométrie (clic droit sur table attributaire)
+- calculer la géométrie (clic droit sur table attributaire)
 
-puis lisser un polygone
+- puis lisser un polygone
 
 # Schéma complet
 

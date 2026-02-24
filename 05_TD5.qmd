@@ -17,21 +17,25 @@ knitr::opts_chunk$set(warning = FALSE)
 
 # Objet
 
-Les images sentinel sont faciles d'accès et permettent d'évaluer les changements récents.
+Les images Sentinel de Copernicus Hub sont faciles d'accès et permettent d'évaluer les changements récents.
 
-Pour le MNS et le MNT, la campagne LIDAR de l'IGN (2021-26) a permis de récupérer des données beaucoup plus précises.
+Pour le MNS et le MNT, la [campagne LIDAR de l'IGN](https://macarte.ign.fr/carte/mThSup/diffusionMNxLiDARHD) qui se termine actuellement a permis de récupérer des données beaucoup plus précises.
 
-Le cours portera sur l'exploitation de cette donnée raster plus spécifique l'élévation.
+Le cours portera sur l'exploitation de cette donnée raster plus spécifique l'élévation. Nous explorerons la donnée, après l'avoir coupée, en la visualisant avec différentes symbologies.
+
+Nous aborderons ensuite les opérations mathématiques simples possibles permises par la structure en raster.
+
+Enfin, comme pour le 1er cours sur le raster, nous essaierons de construire une chaîne de géotraitement plutôt que d'explorer chaque outil un par un.
 
 # Exploration
 
 ## Rechercher la donnée
 
-Le mieux est de repérer les zones et de chercher les dalles sur cartes.gouv.fr
+Le mieux est de repérer les zones et de chercher les dalles sur cartes.gouv.fr. 2 liens utiles :
 
-https://geoservices.ign.fr/lidarhd
+-   [la communauté lidar hd](https://geoservices.ign.fr/lidarhd)
 
-https://cartes.gouv.fr/telechargement/IGNF_MNT-LIDAR-HD
+-   [L'interface de téléchargement sur cartes.gouv](https://cartes.gouv.fr/telechargement/IGNF_MNT-LIDAR-HD)
 
 Pour Bondy, par rapport aux zones de carreaux manquants, 2 zones concernées
 
@@ -50,12 +54,13 @@ plot(mns)
 mnh <- mns-mnt
 ```
 
-
 pour le parc (0662 / 6869)
 
 D'après le nom du fichier, quelle est la précision ?
 
 Charger les 2 dalles
+
+Observer le poids
 
 A t on besoin de reprojeter ?
 
@@ -105,6 +110,9 @@ Observer les différences avec l'image de départ
 Prendre les arbres ou les bâtiments, trouver une fourchette de hauteurs.
 
 ![](img/valeursMNT.png)
+
+
+Utiliser l'outil *statistiques zonales*
 
 Refaire une symbologie
 
@@ -164,18 +172,17 @@ Après avoir extrait la zone d'étude et construit un mnh, le traitement pourrai
 
 -   classification sur la hauteur
 
-- OU densité de points
+-   OU densité de points
 
-- OU ré-échantillonner
+-   OU ré-échantillonner
 
-- seuillage (filtre)
+-   seuillage (filtre)
 
-- tamisage (élimination des pixels isolés)
+-   tamisage (élimination des pixels isolés)
 
-- filtre morphologique : ajouter 2 pixels sur chaque ensemble de pixel
+-   filtre morphologique : ajouter 2 pixels sur chaque ensemble de pixel
 
 A chaque fois, il faut faire varier les paramètres pour voir si le résultat n'est pas plus intéressant.
-
 
 ## Reclassification
 
@@ -248,6 +255,7 @@ kmr
 plot(zac, main = "Image de départ")
 plot(kmr, main = "Classification non supervisée")
 ```
+
 L'idée est définir plus de classes quitte à les fusionner ensuite.
 
 ## Ré échantillonage et vectorisation
@@ -305,7 +313,6 @@ agg <- agg [agg$aire > 150 & agg$aire < 1600,]
 plot(zac4)
 plot(agg$geometry)
 ```
-
 
 ## Simplification
 
