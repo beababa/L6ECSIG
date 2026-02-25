@@ -78,15 +78,14 @@ Chargement des couches : commune et carreaux
 
 ```{r}
 library(sf)
-commune <- st_read("data/cours3.gpkg", "commune", quiet=T)
+commune <- st_read("data/cours5.gpkg", "commune", quiet=T)
 bondy <- commune [commune$code == '93010',]
 car <- st_read("data/gros/construction.gpkg", "93", quiet=T)
 ```
 
 Intersection Bondy - carreaux dpt puis union des carreaux pour accélérer les traitements.
 
-En effet les traitements spatiaux sur des polygones peuvent être très lents, autant
-traiter une union des carreaux plutôt que chaque carreau séparé.
+En effet les traitements spatiaux sur des polygones peuvent être très lents, autant traiter une union des carreaux plutôt que chaque carreau séparé.
 
 ```{r}
 inter <- st_union(st_intersection(bondy,car))
@@ -126,8 +125,8 @@ flowchart LR
 On procéde par dpt, pour éviter d'avoir des délais de traitement trop longs.
 
 ```{r}
-commune <- st_read("data/cours3.gpkg", "commune", quiet=T)
-car <- st_read ("data/cours3.gpkg", "car", quiet=T)
+commune <- st_read("data/cours5.gpkg", "commune", quiet=T)
+car <- st_read ("data/cours5.gpkg", "car", quiet=T)
 # on agrège les carreaux par dpt
 aggCar <- aggregate(car [, c( "dpt.1")], by = list(car$dpt.1), length)
 # même opération sur les communes
@@ -148,7 +147,7 @@ for (d in dpt){
 #diff <- st_cast(diff,"POLYGON")
 inter <- st_intersection(diff, commune)
 inter <- inter [, c("code", "nom")]
-st_write(inter , "data/cours4.gpkg", "carreau_manquant", delete_layer = T)
+st_write(inter , "data/cours5.gpkg", "carreau_manquant", delete_layer = T)
 ```
 
 ```{r}
@@ -165,9 +164,8 @@ for (d in c(93,94)){
 #### Cas de la Martinique
 
 ```{r}
-car <- st_read ("data/cours3.gpkg", "car97", quiet=T)
-st_crs(car)
-commune <- st_read("data/cours3.gpkg", "commune", quiet=T)
+car <- st_read ("data/cours5.gpkg", "car97", quiet=T)
+commune <- st_read("data/cours5.gpkg", "commune", quiet=T)
 commune <- commune[commune$dpt == 97,]
 commune <- st_transform(commune, 5490 )
 agg <- aggregate (commune [, c("dpt")], by = list(commune$dpt), length)
@@ -177,7 +175,7 @@ diff97 <- st_difference(agg, agg2 )
 inter <- st_intersection(diff97, commune [, c("code", "nom")])
 inter <- inter [,c("code", "nom")]
 inter <- st_cast(inter,"POLYGON")
-st_write(inter, "data/cours4b.gpkg", "carreau_manquant97", delete_layer = T, quiet = T)
+st_write(inter, "data/cours5.gpkg", "carreau_manquant97", delete_layer = T, quiet = T)
 ```
 
 ```{r}
@@ -192,15 +190,15 @@ mf_layout ("Carreaux absents sur la Martinique ", "insee 2018, IGN 2026")
 
 Essayer de découper le raster à la commune, puis au carreau manquant
 
-
 ![](img/decouperRaster.png)
 
-Essayer avec ou sans l'option *utiliser la géométrie en entrée*... 
-
+Essayer avec ou sans l'option *utiliser la géométrie en entrée*...
 
 ## Géotraitement 3 = convertir la couleur du raster en niveaux de gris
 
-outil *Découper le raster*
+Il s'agit de créer un masque binaire, avec les valeurs 0 et 1
+
+outil *Reclassification*
 
 Si on prend l'indice ndvi est-ce nécessaire ?
 
@@ -216,9 +214,9 @@ outil Raster vers polygone
 
 puis taille et lissage
 
-calculer la géométrie (clic droit sur table attributaire)
+- calculer la géométrie (clic droit sur table attributaire)
 
-puis lisser un polygone
+- puis lisser un polygone
 
 # Schéma complet
 
