@@ -1,0 +1,90 @@
+---
+title: "MNS et MNT"
+output: 
+  html: 
+    number_sections: true
+    toc: true
+    code-fold: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+Les images sentinel sont faciles d'accès et permettent d'évaluer les changements récents.
+
+Pour le MNS et le MNT, la campagne LIDAR de l'IGN a permis de récupérer des données beaucoup plus précises.
+
+Concernant notre problématique spécifique (richesse / pauvreté commune), l'idée est d'examniner les mnt mns de 3 rues importantes de votre commune (pas de départementale), pour voir si la voirie est lisse.
+
+
+
+# Définition MNS MNT MNE
+
+
+définition de la directive européenne INSPIRE
+
+MNT surface nue
+
+MNS hauteur de tous les objets placés au sol (sursol)
+
+un MNE correspond soit au MNT, soit au MNS
+
+Dans chaque cas, il faut s'interroger.
+
+D'après le nom du fichier, quelle est la précision ?
+
+Charger les 2 dalles
+
+A t on besoin de reprojeter ?
+
+# Couper au carreau manquant
+
+Récupérer les rues concernées avec overpass turbo, le tag est
+
+```{}
+highway = * and name = nomRue
+```
+
+Pour trouver le nom, on regarde sur openstreetmap.org afin d'avoir le nom utilisé ou on utilise l'expression régulière
+
+
+```{r}
+name ~ *anqui
+```
+
+
+
+Pour couper, explorer le menu imagerie / processus et raster functions, quelle est la différence ?
+
+# Symbologie
+
+clic droit au niveau de la fenêtre contenu / symbologie
+
+
+
+Rechercher la palette élévation dans le mode continu
+
+Observer les différences avec l'image de départ
+
+# MNH
+
+## Calculatrice raster
+
+## Informations image
+
+Prendre les arbres ou les bâtiments, trouver une fourchette de hauteurs.
+
+Refaire une symbologie
+
+## Tester les modes de visualisation
+
+# Simuler un point d'observation
+
+Comment voir le plus d'arbres ?
