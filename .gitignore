@@ -5,3 +5,5 @@
 /data/gros/
 /_site
 /.quarto/
+
+**/*.quarto_ipynb

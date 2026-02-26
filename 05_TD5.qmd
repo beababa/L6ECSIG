@@ -111,7 +111,6 @@ Prendre les arbres ou les bâtiments, trouver une fourchette de hauteurs.
 
 ![](img/valeursMNT.png)
 
-
 Utiliser l'outil *statistiques zonales*
 
 Refaire une symbologie
