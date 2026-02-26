@@ -1,0 +1,35 @@
+https://cartes.gouv.fr/telechargement/IGNF_MNS-LIDAR-HD
+
+télécharger les carreaux mnt et mns sur au moins 2 rues de votre commune
+
+Afficher vos 2 rasters dans arcgis + vos limites communales
+
+Tester la symbologie (conseil : altitude 10)
+
+
+
+name ~ "anqui"
+
+(name ~ "anqui" and highway=*) in bondy 
+
+tag = key + value
+
+
+(name ~ "anqui" or name ~ "ard Vaillant"  or name ~ "arbusse")  and highway = * in bondy
+
+Faire la requête sur votre dalle !
+
+
+Mettre le geojson / le reprojeter en 2154 / faire le tampon
+
+Couper les rasters avec le tampon
+
+
+
+
+
+
+
+
+
+
