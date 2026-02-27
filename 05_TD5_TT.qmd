@@ -50,9 +50,6 @@ mns <- rast("data/cours5/LHD_FXX_0662_6867_MNS_O_0M50_LAMB93_IGN69.tif")
 mnt <- rast("data/cours5/LHD_FXX_0662_6867_MNT_O_0M50_LAMB93_IGN69.tif")
 ```
 
-
-
-
 Questions :
 
 -   D'après le nom du fichier, quelle est la précision ?
@@ -92,8 +89,8 @@ library(mapview)
 mapview(tampon)
 st_write(tampon, "data/cours5.gpkg", "tampon", delete_layer = T, quiet = T)
 ```
-![](img/tamponVisuOSM.png)
 
+![](img/tamponVisuOSM.png)
 
 ## Couper (= crop / mask)
 
@@ -117,7 +114,7 @@ Rechercher la palette élévation dans le mode continu
 
 ![](img/paletteElevation.png)
 
-## Le résultat 
+## Le résultat
 
 ![](img/symbologie.png)
 
@@ -146,7 +143,6 @@ Et surtout peut-on déjà supposer que la route n’est pas totalement lisse ?
 
 ![](img/pbVoirieClaudel.png)
 
-
 # MNH : utilisation de la calculatrice raster
 
 Retenir la notion d’algèbre des cartes
@@ -158,69 +154,87 @@ MNH <- MNS - MNT
 #writeRaster(MNH, "data/cours5/mnh.tif", overwrite = T)
 ```
 
-
-
-
 # Tester les modes de visualisation
 
 Les rasters d’élévations sont toujours utilisés avec les mêmes outils :
 
-
-![](img/mntModesvisualisation.png)
-![](img/pente.png)
+![](img/mntModesvisualisation.png) ![](img/pente.png)
 
 Essayer notamment ombrage, pente et contour.
 
 ```{r}
 # utilisation du contour
 contour(MNH, col = "red", border=NA)
+# taille pente (en degrés) et exposition
+pente <- terrain(MNH, v = c("slope", "aspect"), unit ="degrees")
+ombrage <- shade(slope = pente$slope, aspect = pente$aspect)
+plot(ombrage, col = gray (0:50/50),legend = F)
 ```
+
 
 Il apparaît très facile avec les différents outils proposés de cerner les anomalies de la voirie.
 
-
 # Dénombrer le nombre d’anomalies par rue
-
 
 Reprendre par exemple la couche pente.
 
 Proposition d’une méthode :
 
-    - seuillage (reclassification) : distinguer les pentes > 30 des autres
+
+- lissage
+
+On agrège les pixels à leurs voisins selon la valeur.
+
+```{r}
+lissage <- focal(pente, w=3, fun = mean, nar.rm=T)
+plot(lissage)
+```
+
+      
+- seuillage (reclassification) : distinguer les pentes > 30 des autres
 
 
 ```{r}
 pente <- rast("data/cours5/pente.tif")
-hist(pente)
-reclassif <- matrix (c(-1,30,1,
-                       30,90,2),
+lissage <- focal(pente, w=3, fun = mean, nar.rm=T)
+hist(lissage)
+reclassif <- matrix (c(0,5,1,
+                       5,83,2),
                      ncol = 3,
                      byrow = TRUE)
-pente2 <- classify(pente, rcl = reclassif)
+lissage2 <- classify(lissage, rcl = reclassif)
 pal <- c("white", "blue")
-plot(pente2, col = pal)
-freq(pente2)
+plot(lissage2, col = pal)
+freq(lissage2)
 ```
 
-- Convertir raster => vecteur et agréger les polygones contigus
+
+
+
+-   Convertir raster =\> vecteur et agréger les polygones contigus
 
 ```{r}
 library(sf)
-v <- as.polygons(pente2)
+v <- as.polygons(lissage2)
 v <- st_as_sf(v)
 v <- st_cast(v, "POLYGON")
-table(v$pente)
-v <- v [v$pente == 2,]
+table(v$focal_mean)
+v <- v [v$focal_mean == 2,]
 mapview(v)
 ```
-- Comter le nombre de géométries et leur taille
+
+-   Comter le nombre de géométries et leur taille
 
 ```{r}
 v$aire <- st_area(v)
 hist(v$aire)
-
 library(mapsf)
 mf_init(v [1:10,])
 mf_map(v, "aire", type ="choro", add = T)
 ```
-Il faudrait vérifier en priorité les zones plus petites.
+
+Une vérification sur le terrain s'impose bien sûr !
+
+
+
+
