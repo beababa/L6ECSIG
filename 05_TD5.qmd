@@ -1,5 +1,5 @@
 ---
-title: "MNS et MNT"
+title: "MNS et MNT - 1er essai"
 output: 
   html: 
     number_sections: true
@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(eval = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -110,7 +110,6 @@ Observer les différences avec l'image de départ
 Prendre les arbres ou les bâtiments, trouver une fourchette de hauteurs.
 
 ![](img/valeursMNT.png)
-
 
 Utiliser l'outil *statistiques zonales*
 

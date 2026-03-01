@@ -1,0 +1,12 @@
+Projection    LAMBERT
+Units         METERS
+Zunits        NO
+Xshift        0.0
+Yshift        0.0
+Parameters    6378137.0  6356752.314245179
+  44  0  0.0 /* 1st standard parallel
+  49  0  0.0 /* 2nd standard parallel
+   3  0  0.0 /* central meridian
+  46 30  0.0 /* latitude of projection's origin
+700000.0 /* false easting (meters)
+6600000.0 /* false northing (meters)

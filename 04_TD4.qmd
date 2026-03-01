@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(eval = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -214,9 +214,9 @@ outil Raster vers polygone
 
 puis taille et lissage
 
-- calculer la géométrie (clic droit sur table attributaire)
+-   calculer la géométrie (clic droit sur table attributaire)
 
-- puis lisser un polygone
+-   puis lisser un polygone
 
 # Schéma complet
 

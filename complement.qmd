@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(eval = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -219,4 +219,5 @@ jointure$rapport <- (round((jointure$carAbs)/(jointure$carTot),2))*100
 plot(jointure$carTot, jointure$carAbs, log="xy", main = "rapport carreaux présents / absents par dpt", )
 text(jointure$carTot,jointure$carAbs, jointure$dpt, pos = 4)
 ```
+
 Tous les dpts au dessus de la droite de régression ont plus de carreaux absents que de carreaux totaux.

@@ -17,22 +17,24 @@ knitr::opts_chunk$set(warning = FALSE)
 
 # Objet
 
-Les images sentinel sont faciles d'accès et permettent d'évaluer les changements récents.
+Les images Sentinel sont faciles d'accès et permettent d'évaluer les changements récents.
 
-Pour le MNS et le MNT, la campagne LIDAR de l'IGN a permis de récupérer des données beaucoup plus précises.
-
-Concernant notre problématique spécifique (richesse / pauvreté commune), l'idée est d'examniner les mnt mns de 3 rues importantes de votre commune (pas de départementale), pour voir si la voirie est lisse.
+Pour le MNS et le MNT, la [campagne LIDAR de l'IGN](https://macarte.ign.fr/carte/mThSup/diffusionMNxLiDARHD) qui se termine actuellement a permis de récupérer des données beaucoup plus précises.
 
 
+Concernant notre problématique spécifique (richesse / pauvreté commune et administrés), l'idée est d'examniner les mnt / mns de 3 rues importantes de votre commune (pas de départementale), pour voir si la voirie est lisse (= sans nid de poule).
 
-# Définition MNS MNT MNE
 
+
+# Définitions MNS MNT MNE
+
+Différence entre un MNT / MNS et une image sentinel ?
 
 définition de la directive européenne INSPIRE
 
-MNT surface nue
+- MNT surface nue
 
-MNS hauteur de tous les objets placés au sol (sursol)
+- MNS hauteur de tous les objets placés au sol (sursol)
 
 un MNE correspond soit au MNT, soit au MNS
 
@@ -40,51 +42,188 @@ Dans chaque cas, il faut s'interroger.
 
 D'après le nom du fichier, quelle est la précision ?
 
-Charger les 2 dalles
+Charger les 2 dalles (mnt et mns) (662 / 6867 )
+
+```{r}
+library(terra)
+mns <- rast("data/cours5/LHD_FXX_0662_6867_MNS_O_0M50_LAMB93_IGN69.tif")
+mnt <- rast("data/cours5/LHD_FXX_0662_6867_MNT_O_0M50_LAMB93_IGN69.tif")
+```
 
 A t on besoin de reprojeter ?
 
-# Couper au carreau manquant
+# Couper au tampon
+
+
+## Récupérer les rues
+
 
 Récupérer les rues concernées avec overpass turbo, le tag est
 
 ```{}
-highway = * and name = nomRue
+(name ~ "anqui" or name ~ "ard Vaillant"  or name ~ "arbusse") and highway <> bus_stop and highway = * in bondy
 ```
 
-Pour trouver le nom, on regarde sur openstreetmap.org afin d'avoir le nom utilisé ou on utilise l'expression régulière
+A commenter 
+
+- le tilde, 
+
+- la casse 
+
+- les opérateurs OR et AND 
+
+- les parenthèses
+
+## Tampon le plus petit possible
+
+Quelle est la largeur d'une chaussée ?
+
+```{r}
+library(sf)
+rue <- st_read("data/cours5/3rues.geojson")
+rue <- aggregate(rue [, "name"], by = list(rue$name), length)
+rue <- st_transform(rue, 2154)
+tampon <- st_buffer(rue,2)
+names(tampon) [1:2] <- c("nom", "nb")
+library(mapview)
+mapview(tampon)
+st_write(tampon, "data/cours5.gpkg", "tampon", delete_layer = T)
+```
+
+
+
+## Couper (=crop/mask)
+
+Pour couper, explorer le menu imagerie / processus et raster functions, quelle est la différence ?
+
+Dans fonctions rasters, tout est dans gestion des données
+
+```{r}
+MNT <- crop(mnt, tampon, mask=T)
+MNS <- crop(mns, tampon, mask=T)
+```
 
 
 ```{r}
-name ~ *anqui
+plot(MNT)
 ```
 
+paramètres à appliquer : 
 
-
-Pour couper, explorer le menu imagerie / processus et raster functions, quelle est la différence ?
+- ne pas oublier de cocher "couper la géométrie" sinon la coupure se fait par défaut au carré.
 
 # Symbologie
 
 clic droit au niveau de la fenêtre contenu / symbologie
 
+![](img/paletteElevation.png)
+
+Rechercher la palette élévation dans le mode continu, appliquer la même palette aux deux couches
+
+Pouquoi les 3 rues n'ont pas la même amplitude d'élevation ?
+
+Observer les différences entre les 3 rues au niveau du mnt et du mns
+
+- Quelle différence dans les étendues min / max ?
+
+```{r}
+freqMNS <- freq(MNS)
+freqMNT <- freq(MNT)
+head(freqMNT)
+```
 
 
-Rechercher la palette élévation dans le mode continu
+```{r}
+par(mf_row = c(1,2))
+barplot(MNT, main = "MNT")
+barplot(MNS, main = "MNS")
 
-Observer les différences avec l'image de départ
+```
 
-# MNH
 
-## Calculatrice raster
+- et surtout peut-on déjà supposer que la route n'est pas totalement lisse ?
 
-## Informations image
+![](img/rueAbimee.png)
 
-Prendre les arbres ou les bâtiments, trouver une fourchette de hauteurs.
+# MNH : utilisation de la calculatrice raster
 
-Refaire une symbologie
+Retenir la notion d'*algèbre des cartes*
 
-## Tester les modes de visualisation
 
-# Simuler un point d'observation
+Afin d'éliminer le problème de différence d'élévation entre les 3 rues, on va créer un MNH
 
-Comment voir le plus d'arbres ?
+```{r}
+MNH <- MNS - MNT 
+```
+
+Les 3 rues utilisent-elles désormais la même amplitude ?
+
+
+# Tester les modes de visualisation
+
+Les rasters d'élévations sont toujours utilisés avec les mêmes outils :
+
+![](img/mntModesvisualisation.png)
+
+Ce sont les outils de surface dans les fonctions rasters.
+
+Essayer notamment ombrage, pente et contour
+
+```{r}
+# utilisation du contour
+contour(MNH, col = "red", border=NA)
+```
+
+Il apparaît très facile avec les différents outils proposés de cerner les anomalies de la voirie.
+
+# Dénombrer le nombre d'anomalies par rue
+
+Reprendre par exemple la couche pente.
+
+Proposition d'une méthode :
+
+- seuillage (reclassification) : distinguer les pentes > 30 des autres
+
+
+```{r}
+pente <- rast("data/cours5/pente/Slope_mnh.tif")
+hist(pente)
+reclassif <- matrix (c(-1,30,1,
+                       30,90,2),
+                     ncol = 3,
+                     byrow = TRUE)
+pente2 <- classify(pente, rcl = reclassif)
+pal <- c("white", "blue")
+plot(pente2, col = pal)
+freq(pente2)
+```
+
+
+- convertir raster => vecteur et agréger les polygones contigus
+
+
+
+```{r}
+library(sf)
+v <- as.polygons(pente2)
+v <- st_as_sf(v)
+v <- st_cast(v, "POLYGON")
+table(v$Slope_mnh)
+v <- v [v$Slope_mnh == 2,]
+mapview(v)
+```
+
+
+- compter le nombre de géométries et leur taille
+
+
+```{r}
+v$aire <- st_area(v)
+hist(v$aire)
+mapview(v, zcol="aire")
+```
+
+
+Il faudrait vérifier en priorité les zones les plus petites.
+
+
