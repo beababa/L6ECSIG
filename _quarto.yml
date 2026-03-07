@@ -17,6 +17,8 @@ website:
         href: 04_TD4.html 
       - text: "MNT"
         href: 05_TD5_TT.html 
+      - text: "Jointures"
+        href: 06_TD6.html 
     right:
       - icon: fa-github
         href: https://github.com/beababa/beababa.github.io

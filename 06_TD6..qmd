@@ -1,0 +1,136 @@
+---
+title: "Jointures"
+output: 
+  html: 
+    number_sections: true
+    toc: true
+    code-fold: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+Les jointures permettent d'enrichir les données en liant plusieurs tables ensemble. Les attributs des 2 tables vont se retrouver dans la jointure.
+
+La jointure attributaire est facile à comprendre. Le point de vigilance est de vérifier le nombre d'entité au départ et après la jointure afin de contrôler le processus.
+
+La jointure spatiale est plus complexe et coûteuse en terme de calculs, se méfier notamment des croisements polygones / polygones, il vaut mieux passer par les centroides.
+
+Les jointures spatiales reposent sur les relations topologique (inclusion, adjacence et intersection).
+
+# Jointure attributaire
+
+Vu la sélection attributaire, l'ensemble de définition sur une seule couche.
+
+## Repérer la clé
+
+Simplicité de la clé (éviter les noms, privilégier les chiffres)
+
+Cas des noms de rue
+
+## Sens de la jointure
+
+Table avec géométrie en premier
+
+
+## Exemple données OFGL et communes du dpt
+
+
+Récupération des limites communales dans le dpt dans OSM
+
+requête : admin_level=8 in "seine saint denis"
+
+```{r}
+commune <- st_read("data/cours6/communes93.geojson")
+commune <- st_collection_extract(commune, "POLYGON")
+ofgl <- read.csv2("data/cours6/donnees_carto_communes.csv", dec =".")
+commune$ref.INSEE
+ofgl$Insee
+jointure <- merge(commune, ofgl, by.x = "ref.INSEE", by.y = "Insee")
+```
+
+
+```{r}
+hist(jointure$Montant.par.habitant.2024)
+
+mf_map(jointure, type = "choro", var = "Montant.par.habitant.2024", border = NA)
+#mf_label(jointure, "name" , overlap = F, halo = T)
+mf_layout("Dépenses personnel par habitant dans le 93", "OFGL 2024, OSM 2026")
+```
+
+
+
+
+# Jointure spatiale
+
+Pas de champs commun entre les 2 géométries
+
+Attention aux statistiques issues de ces jointures
+
+```{r}
+mf_map(car, col=NA)
+mf_map(bat, col = "cadetblue", border=NA,add = T)
+mf_layout("Carreaux et bâtiments", "Filosofi 2019 / OSM 2026")
+```
+
+L'idée est de compter le nombre de bâtiments par carreau afin de calculer les données filosofi au bâtiment.
+
+
+## Points et polygones
+
+Batiments (centroides) et carreau
+
+tag OSM pour récupérer les bâtiments : building=yes
+
+```{r}
+library(sf)
+bat <- st_read("data/cours6/bat.geojson")
+bat <- st_transform(bat, 2154)
+car <- st_read("data/bondy.gpkg", "carreau")
+car <- car [, c("idcar_200m")]
+car$id <- as.integer(rownames(car))
+```
+
+
+```{r}
+library (mapsf)
+mf_map(car)
+mf_label(car, "id", cex = 0.5)
+```
+
+
+```{r}
+# centroides bat
+centroid <- st_centroid(bat$geometry)
+centroid <- st_transform(centroid, 2154)
+car <- st_transform(car, 2154)
+# intersection : c'est la relation topologique passe partout
+jointure <- st_intersection(car, centroid)
+mf_map(jointure, type = "typo", "id", pch = 19)
+
+head(jointure)
+table(jointure$id)
+```
+
+
+## ¨Polygones et polygones
+
+bat et carreaux
+
+```{r}
+jointure2 <- NULL
+jointure2 <-  st_intersection(car, bat)
+jointure2 [, c( "id")]
+table(jointure2$id)
+```
+```{r}
+mf_map(jointure2, type="typo", border = NA, var = "id", legend.pos=NA)
+```
+
