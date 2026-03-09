@@ -80,7 +80,8 @@ Chargement des couches : commune et carreaux
 library(sf)
 commune <- st_read("data/cours5.gpkg", "commune", quiet=T)
 bondy <- commune [commune$code == '93010',]
-car <- st_read("data/gros/construction.gpkg", "93", quiet=T)
+st_layers("data/dataCours1/car.gpkg")
+car <- st_read("data/dataCours1/car.gpkg", "dpt", quiet=T)
 ```
 
 Intersection Bondy - carreaux dpt puis union des carreaux pour accélérer les traitements.
@@ -124,8 +125,8 @@ flowchart LR
 
 On procéde par dpt, pour éviter d'avoir des délais de traitement trop longs.
 
-```{r}
-commune <- st_read("data/cours5.gpkg", "commune", quiet=T)
+```{r, eval=FALSE}
+commune <- st_read("data/cours4.gpkg", "commune", quiet=T)
 car <- st_read ("data/cours5.gpkg", "car", quiet=T)
 # on agrège les carreaux par dpt
 aggCar <- aggregate(car [, c( "dpt.1")], by = list(car$dpt.1), length)
@@ -220,4 +221,19 @@ puis taille et lissage
 
 # Schéma complet
 
-A faire pour la semaine prochaine
+```{mermaid}
+flowchart LR
+  A[image copernicus] --> B{reprojeter}
+  B --> C[image reprojetée]
+  C --> E{Découper}
+  D[carreaux manquantes] --> E
+  E --> F[extractions image]
+  F --> G{convertir en niveaux de gris}
+  G --> H[image grise]
+  H --> I{seuillage}
+  I --> J[carreaux bat et végétation]
+  J --> K{vectoriser}
+  K --> L[bat et végétation vectorisés]
+  L --> M{supprimer les petites géométries}
+  M --> N[carte finale]
+```

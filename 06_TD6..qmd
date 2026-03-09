@@ -39,15 +39,15 @@ Cas des noms de rue
 
 Table avec géométrie en premier
 
-
 ## Exemple données OFGL et communes du dpt
-
 
 Récupération des limites communales dans le dpt dans OSM
 
 requête : admin_level=8 in "seine saint denis"
 
 ```{r}
+library(sf)
+library(mapsf)
 commune <- st_read("data/cours6/communes93.geojson")
 commune <- st_collection_extract(commune, "POLYGON")
 ofgl <- read.csv2("data/cours6/donnees_carto_communes.csv", dec =".")
@@ -56,32 +56,36 @@ ofgl$Insee
 jointure <- merge(commune, ofgl, by.x = "ref.INSEE", by.y = "Insee")
 ```
 
-
 ```{r}
 hist(jointure$Montant.par.habitant.2024)
-
 mf_map(jointure, type = "choro", var = "Montant.par.habitant.2024", border = NA)
 #mf_label(jointure, "name" , overlap = F, halo = T)
 mf_layout("Dépenses personnel par habitant dans le 93", "OFGL 2024, OSM 2026")
 ```
 
-
-
-
 # Jointure spatiale
 
-Pas de champs commun entre les 2 géométries
+Pas de champs attributaire commun entre les 2 géométries, il faut se servir de la topologie.
 
-Attention aux statistiques issues de ces jointures
+Attention aux statistiques issues de ces jointures !
 
 ```{r}
-mf_map(car, col=NA)
+car <- st_read("data/dataCours1/car.gpkg")
+bat <- st_read("data/cours6/bat.geojson")
+```
+
+
+```{r}
+mf_map(car [car$lcog_geo == 93010,], col=NA)
 mf_map(bat, col = "cadetblue", border=NA,add = T)
 mf_layout("Carreaux et bâtiments", "Filosofi 2019 / OSM 2026")
 ```
 
 L'idée est de compter le nombre de bâtiments par carreau afin de calculer les données filosofi au bâtiment.
 
+Les jointures spatiales peuvent être coûteuses en calcul, du coup, souvent, on utilise les centroides.
+
+Il est plus facile pour les logiciels de calculer une intersection centroide / polygone que polygone / polygone.
 
 ## Points et polygones
 
@@ -98,13 +102,11 @@ car <- car [, c("idcar_200m")]
 car$id <- as.integer(rownames(car))
 ```
 
-
 ```{r}
 library (mapsf)
 mf_map(car)
 mf_label(car, "id", cex = 0.5)
 ```
-
 
 ```{r}
 # centroides bat
@@ -119,8 +121,7 @@ head(jointure)
 table(jointure$id)
 ```
 
-
-## ¨Polygones et polygones
+## Polygones et polygones
 
 bat et carreaux
 
@@ -130,7 +131,11 @@ jointure2 <-  st_intersection(car, bat)
 jointure2 [, c( "id")]
 table(jointure2$id)
 ```
+
 ```{r}
 mf_map(jointure2, type="typo", border = NA, var = "id", legend.pos=NA)
 ```
+## Calcul statistique à effectuer
 
+
+En exercice...

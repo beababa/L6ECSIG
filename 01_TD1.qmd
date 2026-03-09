@@ -56,7 +56,8 @@ clic droit sur couche / propriétés de la couche / source / référence spatial
 
 <https://www.insee.fr/fr/outil-interactif/7737357/map.html>
 
-pas de requêteur
+[Requêteur](https://data.smartidf.services/explore/dataset/demographyref-france-donnees-carroyees-200m-millesime/information/?disjunctive.com_arm_code&disjunctive.year&disjunctive.com_code&disjunctive.com_arm_name&disjunctive.com_name&disjunctive.epci_name&disjunctive.epci_code&disjunctive.dep_name&disjunctive.dep_code&disjunctive.reg_name&disjunctive.reg_code) sur le site IDF (prendre les données 2017, ce sont les plus récentes disponibles sur le requêteur)
+
 
 Voir 200 m ou 1 km (en cours télécharger le 1 km, à la maison le 200 m)
 
@@ -105,7 +106,7 @@ library(sf)
 parcelle <- st_read ("data/dataCours1/cadastre-93010-parcelles.json")
 dpt <- st_read("data/dataCours1/communes.shp")
 bondy <- st_read("data/dataCours1/export.geojson")
-car <- st_read("data/gros/carreaux_200m_met.gpkg")
+car <- st_read("data/dataCours1/demographyref-france-donnees-carroyees-200m-millesime.geojson")
 ```
 
 ## Problèmes éventuels de géométries
@@ -122,6 +123,7 @@ summary(parcelle$geometry)
 table(st_is_valid(parcelle$geometry))
 ```
 
+
 ## Intersections
 
 ```{r}
@@ -132,6 +134,7 @@ st_crs(parcelle)
 # Transformations de projection
 bondy <- st_transform(bondy, 2154)
 parcelle <- st_transform(parcelle, 2154)
+car <- st_transform(car, 2154)
 # Intersections
 inter1 <- st_intersection(car, bondy)
 inter2 <- st_intersection(car, dpt)

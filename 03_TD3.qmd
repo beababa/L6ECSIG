@@ -74,7 +74,7 @@ library(sf)
 # lecture des données
 bondy <- st_read("data/cours3.gpkg", "commune", quiet = T)
 bondy <- bondy [bondy$code == 93010,]
-car <- st_read("data/gros/construction.gpkg", "93",  quiet = T) 
+car <- st_read("data/cours5.gpkg", "car",  quiet = T) 
 # intersection
 inter <- st_intersection(car, bondy)
 st_write(inter, "data/bondy.gpkg", "carreau", delete_layer = T,  quiet = T)
@@ -179,3 +179,5 @@ Etape 2 : recoder le champs menage pauvre
 ![](img/recodage.png)
 
 Etape 3 : quel outil pour fusionner en fonction des attributs ?
+
+

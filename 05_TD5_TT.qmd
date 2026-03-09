@@ -76,8 +76,6 @@ A commenter
 
 # Couper au tampon
 
-
-
 ## Tampon le plus petit possible
 
 Quelle est la largeur d'une chaussée ?

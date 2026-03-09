@@ -222,8 +222,8 @@ text(jointure$carTot,jointure$carAbs, jointure$dpt, pos = 4)
 ```
 
 Tous les dpts au dessus de la droite de régression ont plus de carreaux absents que de carreaux totaux.
-<<<<<<< HEAD
-=======
+
+
 
 # Tri fichier
 
@@ -239,4 +239,3 @@ for (c in couche){
 }
 st_layers("data/base.gpkg")
 ```
->>>>>>> 426a66f14edc8c5eea5e19f266579c9665877c8e
