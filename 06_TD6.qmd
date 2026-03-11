@@ -19,13 +19,11 @@ knitr::opts_chunk$set(warning = FALSE)
 
 Les jointures permettent d'enrichir les données en liant plusieurs tables ensemble. Les attributs des 2 tables vont se retrouver dans la jointure.
 
-La jointure attributaire est facile à comprendre. 
-Le point de vigilance est de vérifier :
+La jointure attributaire est facile à comprendre. Le point de vigilance est de vérifier :
 
-- le nombre d'entités au départ 
+-   le nombre d'entités au départ
 
-- et après la jointure 
-
+-   et après la jointure
 
 La jointure spatiale est plus complexe et coûteuse en terme de calculs, se méfier notamment des croisements polygones / polygones, il vaut mieux passer par les centroides.
 
@@ -33,7 +31,7 @@ Les jointures spatiales reposent sur les relations topologique (inclusion, adjac
 
 # Jointure attributaire
 
-Vu la sélection attributaire, 
+Vu la sélection attributaire,
 
 A voir, l'ensemble de définition sur une seule couche.
 
@@ -56,7 +54,6 @@ flowchart LR
   C --> D[carte symbologie graduée]
 ```
 
-
 ### OSM
 
 Récupération des limites communales dans le dpt dans OSM
@@ -71,11 +68,9 @@ commune <- st_read("data/cours6/communes93.geojson", quiet=T)
 commune <- st_collection_extract(commune, "POLYGON")
 ```
 
-
 ### OFGL
 
 ![](img/ofgl.png)
-
 
 ```{r}
 ofgl <- read.csv2("data/cours6/donnees_carto_communes.csv", dec =".")
@@ -83,17 +78,16 @@ ofgl <- read.csv2("data/cours6/donnees_carto_communes.csv", dec =".")
 
 ### La clé
 
-
 ```{r}
 commune$ref.INSEE
 ofgl$Insee
 ```
+
 Dans Arcgis, la jointure ne passera pas.
 
 Il faut convertir le code insee en chiffre.
 
 ![](img/conversion.png)
-
 
 ### La jointure
 
@@ -102,7 +96,6 @@ jointure <- merge(commune, ofgl, by.x = "ref.INSEE", by.y = "Insee")
 ```
 
 Avec Arcgis, on utilise le menu *Jointure et relation* du clic droit sur la couche
-
 
 ```{r}
 hist(jointure$Montant.par.habitant.2024)
@@ -114,7 +107,6 @@ mf_layout("Dépenses personnel par habitant dans le 93", "OFGL 2024, OSM 2026")
 Sous Arcgis, faire une symbologie *couleurs gradués*
 
 # Jointure spatiale
-
 
 ```{mermaid}
 flowchart LR
@@ -131,30 +123,24 @@ L'idée est de compter le nombre de bâtiments par carreau afin de calculer les 
 
 La récupération des bâtiments se fait sur overpass turbo : *building=yes in bondy*
 
-
 ```{r}
 car <- st_read("data/dataCours1/car.gpkg", quiet = T)
 bat <- st_read("data/cours6/bat.geojson", quiet=T)
 ```
 
-
 Quelles sont les projections ?
-
 
 ```{r}
 bat <- st_transform(bat, 2154)
 ```
 
-
 Affichage des données
-
 
 ```{r}
 mf_map(car [car$id == 93010,], col=NA)
 mf_map(bat, col = "cadetblue", border=NA,add = T)
 mf_layout("Carreaux et bâtiments", "Filosofi 2019 / OSM 2026")
 ```
-
 
 Les jointures spatiales peuvent être coûteuses en calcul, du coup, souvent, on utilise les centroides.
 
@@ -163,8 +149,6 @@ Il est plus facile pour les logiciels de calculer une intersection centroide / p
 ## Points et polygones
 
 ### Batiments (centroides) et carreau
-
-
 
 ```{r}
 library(sf)
@@ -192,12 +176,10 @@ car <- st_transform(car, 2154)
 jointure <- st_intersection(car, centroid)
 ```
 
-
 ```{r}
 head(table(jointure$id))
 jointure <- jointure [jointure$id < 3,]
 ```
-
 
 ```{r, eval=FALSE}
 png("img/jointureSpatiale1.png")
@@ -208,6 +190,7 @@ mf_map(jointure, type="typo", var="id", pch=21, add = T, leg_pos = NA)
 mf_layout("Centroide batiment et id carreau", "OSM, INSEE 2019\nMars 2026")
 dev.off()
 ```
+
 ![](img/jointureSpatiale1.png)
 
 ## Polygones et polygones
@@ -218,9 +201,6 @@ bat et carreaux
 jointure2 <- NULL
 jointure2 <-  st_intersection(car, bat)
 ```
-
-
-
 
 ```{r, eval=FALSE}
 jointure <- jointure2
@@ -233,8 +213,6 @@ mf_map(jointure [jointure], type="typo", var="id", pch=21, add = T, leg_pos = NA
 mf_layout("batiment et id carreau", "OSM, INSEE 2019\nMars 2026")
 dev.off()
 ```
-
-
 
 ![](img/jointureSpatiale2.png)
 
