@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -75,7 +75,6 @@ library(mapsf)
 mf_map(dfHorsMart)
 st_crs (df) <- 4326
 df <- st_transform(df,2154)
-
 ```
 
 cas 19e
@@ -223,8 +222,6 @@ text(jointure$carTot,jointure$carAbs, jointure$dpt, pos = 4)
 
 Tous les dpts au dessus de la droite de régression ont plus de carreaux absents que de carreaux totaux.
 
-
-
 # Tri fichier
 
 ```{r}
@@ -232,9 +229,9 @@ st_layers("data/cours5.gpkg")
 couches <- st_layers("data/cours5.gpkg")
 couches <-  couches$name
 couches
-couche <- couches [c(5,6,7,10,11)]
+couche <- couches [c(2:6)]
 for (c in couche){
-  tmp <- st_read("data/cours5.gpkg", c)
+  tmp <- st_read("data/cours5.gpkg", c, quiet=T)
   st_write(tmp, "data/base.gpkg", c, delete_layer=T, quiet=T)
 }
 st_layers("data/base.gpkg")

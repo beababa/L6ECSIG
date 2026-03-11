@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -125,8 +125,8 @@ flowchart LR
 
 On procéde par dpt, pour éviter d'avoir des délais de traitement trop longs.
 
-```{r, eval=FALSE}
-commune <- st_read("data/cours4.gpkg", "commune", quiet=T)
+```{r}
+commune <- st_read("data/cours5.gpkg", "commune", quiet=T)
 car <- st_read ("data/cours5.gpkg", "car", quiet=T)
 # on agrège les carreaux par dpt
 aggCar <- aggregate(car [, c( "dpt.1")], by = list(car$dpt.1), length)
@@ -144,16 +144,20 @@ for (d in dpt){
 }
 ```
 
+
 ```{r}
 #diff <- st_cast(diff,"POLYGON")
 inter <- st_intersection(diff, commune)
 inter <- inter [, c("code", "nom")]
-st_write(inter , "data/cours5.gpkg", "carreau_manquant", delete_layer = T)
+st_write(inter , "data/cours5.gpkg", "carreau_manquant", delete_layer = T, quiet = T)
 ```
 
 ```{r}
-car$dpt.1 <- as.integer(car$dpt.1)
+car <- st_read ("data/cours5.gpkg", "car", quiet=T)
+commune <- st_read("data/cours5.gpkg", "commune", quiet=T)
+car$dpt <- as.integer(car$dpt)
 par(mfrow=c(1,2))
+d <- 93
 for (d in c(93,94)){
   #mf_map(car [car$dpt.1== d,])
   mf_map(commune [commune$dpt == d,], col=NA, border="cadetblue4", lwd = 4)

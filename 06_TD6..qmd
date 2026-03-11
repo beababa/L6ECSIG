@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = FALSE)
+knitr::opts_chunk$set(eval = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -19,7 +19,13 @@ knitr::opts_chunk$set(warning = FALSE)
 
 Les jointures permettent d'enrichir les données en liant plusieurs tables ensemble. Les attributs des 2 tables vont se retrouver dans la jointure.
 
-La jointure attributaire est facile à comprendre. Le point de vigilance est de vérifier le nombre d'entité au départ et après la jointure afin de contrôler le processus.
+La jointure attributaire est facile à comprendre. 
+Le point de vigilance est de vérifier :
+
+- le nombre d'entités au départ 
+
+- et après la jointure 
+
 
 La jointure spatiale est plus complexe et coûteuse en terme de calculs, se méfier notamment des croisements polygones / polygones, il vaut mieux passer par les centroides.
 
@@ -27,7 +33,9 @@ Les jointures spatiales reposent sur les relations topologique (inclusion, adjac
 
 # Jointure attributaire
 
-Vu la sélection attributaire, l'ensemble de définition sur une seule couche.
+Vu la sélection attributaire, 
+
+A voir, l'ensemble de définition sur une seule couche.
 
 ## Repérer la clé
 
@@ -41,20 +49,60 @@ Table avec géométrie en premier
 
 ## Exemple données OFGL et communes du dpt
 
+```{mermaid}
+flowchart LR
+  A[géométrie commune] --> C{joindre}
+  B[chiffres ofgl] --> C{joindre}
+  C --> D[carte symbologie graduée]
+```
+
+
+### OSM
+
 Récupération des limites communales dans le dpt dans OSM
 
-requête : admin_level=8 in "seine saint denis"
+requête : admin_level=8 in 93
 
 ```{r}
 library(sf)
 library(mapsf)
-commune <- st_read("data/cours6/communes93.geojson")
+commune <- st_read("data/cours6/communes93.geojson", quiet=T)
+# Extraction uniquement des polygones
 commune <- st_collection_extract(commune, "POLYGON")
+```
+
+
+### OFGL
+
+![](img/ofgl.png)
+
+
+```{r}
 ofgl <- read.csv2("data/cours6/donnees_carto_communes.csv", dec =".")
+```
+
+### La clé
+
+
+```{r}
 commune$ref.INSEE
 ofgl$Insee
+```
+Dans Arcgis, la jointure ne passera pas.
+
+Il faut convertir le code insee en chiffre.
+
+![](img/conversion.png)
+
+
+### La jointure
+
+```{r}
 jointure <- merge(commune, ofgl, by.x = "ref.INSEE", by.y = "Insee")
 ```
+
+Avec Arcgis, on utilise le menu *Jointure et relation* du clic droit sur la couche
+
 
 ```{r}
 hist(jointure$Montant.par.habitant.2024)
@@ -63,25 +111,50 @@ mf_map(jointure, type = "choro", var = "Montant.par.habitant.2024", border = NA)
 mf_layout("Dépenses personnel par habitant dans le 93", "OFGL 2024, OSM 2026")
 ```
 
+Sous Arcgis, faire une symbologie *couleurs gradués*
+
 # Jointure spatiale
+
+
+```{mermaid}
+flowchart LR
+  A[carreau] --> C{intersecter}
+  B[bat] --> C{intersecter}
+  C --> D[bat avec l'identifiant du carreau]
+```
 
 Pas de champs attributaire commun entre les 2 géométries, il faut se servir de la topologie.
 
 Attention aux statistiques issues de ces jointures !
 
+L'idée est de compter le nombre de bâtiments par carreau afin de calculer les données filosofi au bâtiment.
+
+La récupération des bâtiments se fait sur overpass turbo : *building=yes in bondy*
+
+
 ```{r}
-car <- st_read("data/dataCours1/car.gpkg")
-bat <- st_read("data/cours6/bat.geojson")
+car <- st_read("data/dataCours1/car.gpkg", quiet = T)
+bat <- st_read("data/cours6/bat.geojson", quiet=T)
 ```
 
 
+Quelles sont les projections ?
+
+
 ```{r}
-mf_map(car [car$lcog_geo == 93010,], col=NA)
+bat <- st_transform(bat, 2154)
+```
+
+
+Affichage des données
+
+
+```{r}
+mf_map(car [car$id == 93010,], col=NA)
 mf_map(bat, col = "cadetblue", border=NA,add = T)
 mf_layout("Carreaux et bâtiments", "Filosofi 2019 / OSM 2026")
 ```
 
-L'idée est de compter le nombre de bâtiments par carreau afin de calculer les données filosofi au bâtiment.
 
 Les jointures spatiales peuvent être coûteuses en calcul, du coup, souvent, on utilise les centroides.
 
@@ -89,17 +162,19 @@ Il est plus facile pour les logiciels de calculer une intersection centroide / p
 
 ## Points et polygones
 
-Batiments (centroides) et carreau
+### Batiments (centroides) et carreau
 
-tag OSM pour récupérer les bâtiments : building=yes
+
 
 ```{r}
 library(sf)
-bat <- st_read("data/cours6/bat.geojson")
+bat <- st_read("data/cours6/bat.geojson", quiet=T)
 bat <- st_transform(bat, 2154)
-car <- st_read("data/bondy.gpkg", "carreau")
+car <- st_read("data/bondy.gpkg", "carreau", quiet=T)
 car <- car [, c("idcar_200m")]
-car$id <- as.integer(rownames(car))
+car <- car [!duplicated(car),]
+car$id <- seq(1, length(car$idcar_200m))
+car <- st_collection_extract(car, "POLYGON")
 ```
 
 ```{r}
@@ -115,11 +190,25 @@ centroid <- st_transform(centroid, 2154)
 car <- st_transform(car, 2154)
 # intersection : c'est la relation topologique passe partout
 jointure <- st_intersection(car, centroid)
-mf_map(jointure, type = "typo", "id", pch = 19)
-
-head(jointure)
-table(jointure$id)
 ```
+
+
+```{r}
+head(table(jointure$id))
+jointure <- jointure [jointure$id < 3,]
+```
+
+
+```{r, eval=FALSE}
+png("img/jointureSpatiale1.png")
+mf_init(car [1:3,])
+mf_map(car, ,col = NA, add = T)
+mf_map(bat, col = "wheat", border=NA, add= T)
+mf_map(jointure, type="typo", var="id", pch=21, add = T, leg_pos = NA)
+mf_layout("Centroide batiment et id carreau", "OSM, INSEE 2019\nMars 2026")
+dev.off()
+```
+![](img/jointureSpatiale1.png)
 
 ## Polygones et polygones
 
@@ -128,14 +217,27 @@ bat et carreaux
 ```{r}
 jointure2 <- NULL
 jointure2 <-  st_intersection(car, bat)
-jointure2 [, c( "id")]
-table(jointure2$id)
 ```
 
-```{r}
-mf_map(jointure2, type="typo", border = NA, var = "id", legend.pos=NA)
+
+
+
+```{r, eval=FALSE}
+jointure <- jointure2
+jointure <- jointure [jointure$id < 3,]
+png("img/jointureSpatiale2.png")
+mf_init(car [1:3,])
+mf_map(car, ,col = NA, add = T)
+mf_map(bat, col = "wheat", border=NA, add= T)
+mf_map(jointure [jointure], type="typo", var="id", pch=21, add = T, leg_pos = NA)
+mf_layout("batiment et id carreau", "OSM, INSEE 2019\nMars 2026")
+dev.off()
 ```
+
+
+
+![](img/jointureSpatiale2.png)
+
 ## Calcul statistique à effectuer
 
-
-En exercice...
+Dans Arcgis Pro, trouver comment calculer le nombre de bâtiments par carreaux (centroides et polygones)
