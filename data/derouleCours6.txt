@@ -1,0 +1,13 @@
+derouleCours6
+
+charger les données :
+
+- ofgl via la cartographie
+
+- contours dpt OSM
+
+-------------------------------
+
+- carreaux commune (cours 5)
+
+- batiment commune = cadastre bat (cadastre etalab)

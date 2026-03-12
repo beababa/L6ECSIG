@@ -236,3 +236,38 @@ for (c in couche){
 }
 st_layers("data/base.gpkg")
 ```
+
+
+# les communes des dpts
+
+
+
+```{r}
+dpt <- unique(substring(choix,1,2))
+commune <- st_read("data/gros/communes-20220101.shp")
+commune$dpt <- substring(commune$insee, 1,2)
+commune <- commune [commune$dpt %in% dpt,]
+st_write(commune, "data/gros/cours6.gpkg", "dpt", quiet=T, delete_layer = T)
+```
+
+
+
+```{r}
+commune [commune$dpt == 97,]
+```
+Verif nb de dpts
+```{r}
+length(table(commune$dpt))
+```
+
+# les batiments dans le cadastre etalab
+
+
+```{r}
+url <- ("https://cadastre.data.gouv.fr/data/etalab-cadastre/2025-12-01/geojson/communes/93/93010/cadastre-93010-batiments.json.gz")
+tmp <- tempfile()
+download.file(url, dest = "data/data.json.gz")
+gzfile("data/data.gz")
+list.files("data/data.json")
+```
+

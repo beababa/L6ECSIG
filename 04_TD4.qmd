@@ -144,7 +144,6 @@ for (d in dpt){
 }
 ```
 
-
 ```{r}
 #diff <- st_cast(diff,"POLYGON")
 inter <- st_intersection(diff, commune)
@@ -225,6 +224,8 @@ puis taille et lissage
 
 # Schéma complet
 
+Utiliser une syntaxe mermaid (voir sur internet)
+
 ```{mermaid}
 flowchart LR
   A[image copernicus] --> B{reprojeter}
@@ -241,3 +242,10 @@ flowchart LR
   L --> M{supprimer les petites géométries}
   M --> N[carte finale]
 ```
+
+
+avec l'AI
+
+![](img/geotraitementAI.png)
+
+![](img/ChatGPT Image 12 mars 2026, 15_45_22.png)
