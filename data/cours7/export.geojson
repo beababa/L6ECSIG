@@ -1,0 +1,291 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2026-03-15T15:42:58Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/84165935",
+        "amenity": "community_centre",
+        "building": "public",
+        "name": "Maison de la Jeunesse et des Services Publics (MJSP)",
+        "operator": "ville de Bondy",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010",
+        "wall": "no"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.4810665,
+              48.91358
+            ],
+            [
+              2.4813428,
+              48.9135488
+            ],
+            [
+              2.4813483,
+              48.9135763
+            ],
+            [
+              2.4814228,
+              48.9138411
+            ],
+            [
+              2.481389,
+              48.9138452
+            ],
+            [
+              2.481319,
+              48.9135911
+            ],
+            [
+              2.4810772,
+              48.9136209
+            ],
+            [
+              2.4810719,
+              48.9136013
+            ],
+            [
+              2.4810665,
+              48.91358
+            ]
+          ]
+        ]
+      },
+      "id": "way/84165935"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/84177424",
+        "amenity": "community_centre",
+        "building": "public",
+        "name": "Maison de quartier et de la citoyenneté Daniel Balavoine",
+        "operator": "ville de Bondy",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.4794964,
+              48.9151315
+            ],
+            [
+              2.4792927,
+              48.9151558
+            ],
+            [
+              2.4793173,
+              48.9152449
+            ],
+            [
+              2.4792246,
+              48.9152559
+            ],
+            [
+              2.4791865,
+              48.9152604
+            ],
+            [
+              2.4791373,
+              48.9150816
+            ],
+            [
+              2.4794717,
+              48.9150418
+            ],
+            [
+              2.4794964,
+              48.9151315
+            ]
+          ]
+        ]
+      },
+      "id": "way/84177424"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/84189997",
+        "amenity": "community_centre",
+        "building": "public",
+        "name": "Maison France Services",
+        "operator": "ville de Bondy",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.4814228,
+              48.9138411
+            ],
+            [
+              2.481432,
+              48.9138725
+            ],
+            [
+              2.4812691,
+              48.9138927
+            ],
+            [
+              2.4812122,
+              48.9136946
+            ],
+            [
+              2.4811084,
+              48.9137055
+            ],
+            [
+              2.4811113,
+              48.913726
+            ],
+            [
+              2.4811055,
+              48.9137266
+            ],
+            [
+              2.4810772,
+              48.9136209
+            ],
+            [
+              2.481319,
+              48.9135911
+            ],
+            [
+              2.481389,
+              48.9138452
+            ],
+            [
+              2.4814228,
+              48.9138411
+            ]
+          ]
+        ]
+      },
+      "id": "way/84189997"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/84191857",
+        "amenity": "community_centre",
+        "building": "public",
+        "name": "Maison France Service Brassens",
+        "source": "cadastre-dgi-fr source : Direction Générale des Impôts - Cadastre. Mise à jour : 2010"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.4820688,
+              48.9003618
+            ],
+            [
+              2.4819239,
+              48.9003912
+            ],
+            [
+              2.4818436,
+              48.9002284
+            ],
+            [
+              2.4819956,
+              48.9001952
+            ],
+            [
+              2.4820688,
+              48.9003618
+            ]
+          ]
+        ]
+      },
+      "id": "way/84191857"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/441193894",
+        "amenity": "community_centre",
+        "building": "public",
+        "name": "Maison des Parents"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              2.4903949,
+              48.9011884
+            ],
+            [
+              2.4905309,
+              48.9011343
+            ],
+            [
+              2.4905627,
+              48.9011817
+            ],
+            [
+              2.4904202,
+              48.9012304
+            ],
+            [
+              2.4903949,
+              48.9011884
+            ]
+          ]
+        ]
+      },
+      "id": "way/441193894"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/10837065372",
+        "addr:city": "Bondy",
+        "addr:housenumber": "4",
+        "addr:postcode": "93140",
+        "addr:street": "Rue de la Philosophie",
+        "amenity": "community_centre",
+        "name": "salle Angela Davis",
+        "operator": "mairie de Bondy",
+        "operator:type": "public"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.4953019,
+          48.8901004
+        ]
+      },
+      "id": "node/10837065372"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12437312912",
+        "amenity": "community_centre",
+        "name": "Sohane"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.4900752,
+          48.891077
+        ]
+      },
+      "id": "node/12437312912"
+    }
+  ]
+}
