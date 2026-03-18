@@ -18,7 +18,9 @@ website:
       - text: "MNT"
         href: 05_TD5_TT.html 
       - text: "Jointures"
-        href: 06_TD6.html 
+        href: 06_TD6.html
+      - text: "Distance"
+        href: 07_TD7.html 
     right:
       - icon: fa-github
         href: https://github.com/beababa/beababa.github.io

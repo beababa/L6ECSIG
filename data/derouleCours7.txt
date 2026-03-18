@@ -1,0 +1,13 @@
+déroulé cours 7
+----------------------------------
+observation de la bo = synthèse de différents outils du graphe
+=> deux traitements pour 2 distances
+DATA
+- essai de récupération des ommunity center dans overpass turbo
+- s'il n'y en a pas, on s'appuie sur la BPE (cours7.gpkg)
+-  filtre sur qlqs équipements
+VORONOI
+- voronoi sous Arcgis
+ISOCHRONE
+- constitution du réseau = utilisation flux WFS
+- utilisation carte . gouv et affichage sous arcgis
