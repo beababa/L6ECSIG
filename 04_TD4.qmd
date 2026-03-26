@@ -243,9 +243,8 @@ flowchart LR
   M --> N[carte finale]
 ```
 
-
 avec l'AI
 
 ![](img/geotraitementAI.png)
 
-![](img/ChatGPT Image 12 mars 2026, 15_45_22.png)
+![](img/ChatGPT%20Image%2012%20mars%202026,%2015_45_22.png)

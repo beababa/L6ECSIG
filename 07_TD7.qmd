@@ -131,7 +131,6 @@ Pour éviter que l'opération ne couvre pas la commune, placer 4 points détermi
 
 ![](img/procedureMAJ.png)
 
-
 # Accessibilité (= isochrone)
 
 ## Nécessité d'un réseau topologique sous Arcgis
@@ -150,7 +149,7 @@ La mise en place du réseau sous Arcgis se fait en différentes étapes :
 
 Cette opération est complexe notamment car la récupération du réseau de la [BD TOPO](https://geoservices.ign.fr/bdtopo) représente des gros volumes de données.
 
-- 1,69 G° pour l'ensemble du gpkg pour le 93
+-   1,69 G° pour l'ensemble du gpkg pour le 93
 
 ```{r, eval=FALSE}
 library(sf)
@@ -159,7 +158,8 @@ couches <- couches$name
 data <- st_read("data/gros/BDT_3-5_GPKG_LAMB93_D093-ED2025-12-15.gpkg", "route_numerotee_ou_nommee")
 st_write(data,"data/cours7/route.gpkg", "bdtopo")
 ```
-- 6 M° pour l'extraction des petites routes
+
+-   6 M° pour l'extraction des petites routes
 
 ## La solution : le flux WFS
 

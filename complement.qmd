@@ -131,6 +131,7 @@ mf_map(commune, col = NA, border ="red",add = T)
 mf_layout("2 communes en Martinique", "insee 2019\n Février 2026")
 dev.off()
 ```
+
 ![](img/carreauxMart.png)
 
 ```{r}
@@ -140,8 +141,8 @@ mf_map(car,add = T)
 mf_layout("Carreaux et 2 communes de Martinique", "insee 2019\n Février 2026")
 dev.off()
 ```
-![](img/carreauxMart2.png)
-Intersection lg carreaux pour Martinique
+
+![](img/carreauxMart2.png) Intersection lg carreaux pour Martinique
 
 ```{r}
 limite <- st_cast(st_geometry(commune), "MULTILINESTRING")
@@ -187,8 +188,8 @@ png("img/interMartinique.png")
 mf_map(inter)
 dev.off()
 ```
-  ![](img/interMartinique.png )
-# fichiers cours 3
+
+![](img/interMartinique.png) \# fichiers cours 3
 
 uniquement men_pauv et recodage une couche par commune
 
@@ -271,7 +272,6 @@ length(table(commune$dpt))
 # les batiments dans le cadastre etalab
 
 On récupère, dézippe et lit la donnée sous R
-
 
 ```{r}
 url <- ("https://cadastre.data.gouv.fr/data/etalab-cadastre/2025-12-01/geojson/communes/93/93010/cadastre-93010-batiments.json.gz")
