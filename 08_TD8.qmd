@@ -34,7 +34,9 @@ tot <- rbind(part1, part2)
 tot <- tot [!is.na(tot$groupe),]
 ```
 
-37 étudiants.
+37 étudiants (43 communes)
+
+Faire compléter le tableau
 
 ## Première attribution par dpt
 
@@ -135,19 +137,12 @@ df
 df <- as.data.frame(v1,v2)
 ```
 
-
 ### Premier commit
-
 
 Une fois le script enregistré il faut faire :
 
-- enregistrer les modifications = cocher les fichiers que l'on veut envoyer sur le serveur git
+-   enregistrer les modifications = cocher les fichiers que l'on veut envoyer sur le serveur git
 
-- le commit (validation des modifications), mettre un message clair
+-   le commit (validation des modifications), mettre un message clair
 
-
-
-
-- le push
-
-
+-   le push

@@ -1,0 +1,20 @@
+Publier son site sur github (pt 1 à 2)
+
+dépot = repository
+
+éventuellement mettre le readme
+-----------------------------------
+sur vos machines télécharger le programme git
+https://git-scm.com/install/windows
+
+Connecter git et R
+
+et créer la clé ssh
+
+et déclarer son identité (ctrl + maj + v)
+
+mettre un fichier dans son dépot git
+
+Initialisation d’un projet R avec Git
+
+jusqu'à l'apparition de l'onglet GIT

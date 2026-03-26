@@ -1,0 +1,8 @@
+- vider le répertoire téléchargement
+
+- vider la poubelle
+
+But = faire de l'espace
+
+
+
