@@ -1,0 +1,70 @@
+---
+title: "Environnment"
+output: 
+  html: 
+    number_sections: true
+    toc: true
+    code-fold: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+Projet : reprendre la thématique ville pauvre - riche sous R en y incluant tous les traitements vus
+sous Arcgis.
+
+Binômes : Distinguer 2 rôles technique et rédacteur, par groupe et zones géographiques proches par dpt
+
+```{r}
+
+```
+
+
+
+Il s'agit de construire votre environnement de travail pour le projet de fin de semestre
+
+A savoir :
+
+- git
+
+- R studio
+
+- R
+
+La découverte de la plateforme data gouv et la fonction de ré-utilisation sera faite
+au cours prochain.
+
+# Git
+
+
+## Création du compte
+
+## le site web
+
+# Rstudio et R
+
+Distinguer les deux
+
+## Connexion R et git
+
+## Premier script R
+
+
+distinguer le data frame et le vecteur
+
+```{r}
+v1 <- c("ville1", "ville2")
+v2 <- c("RN", "LFI")
+df <- data.frame(ville = v1, vainqueur = v2)
+df
+df <- as.data.frame(v1,v2)
+```
+
+

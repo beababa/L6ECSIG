@@ -1,0 +1,10 @@
+derouleCours8
+
+Environnemnt : GIT + R (R studio)
+
+- créer un compte git et publier son fichier readme.rmd
+
+- Connecter R et git = ouvrir R studio et suivre le guide
+
+- premier script R : librairies / data frame et vecteur + GPKG
+
