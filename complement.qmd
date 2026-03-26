@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(eval = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -118,24 +118,29 @@ st_write(res, "data/cours3.gpkg", "carLimite", delete_layer = T, quiet = T)
 Pour le 97
 
 ```{r}
-car <- st_read("data/gros/carreaux_200m_mart.gpkg")
+car <- st_read("data/gros/carreaux_200m_mart.gpkg", quiet=T)
 commune <- commune [grep("^97",commune$code),]
 commune <- st_transform(commune, 5490 )
 ```
 
 ```{r}
 library(mapsf)
+png("img/carreauxMart.png")
 mf_map(car)
 mf_map(commune, col = NA, border ="red",add = T)
 mf_layout("2 communes en Martinique", "insee 2019\n Février 2026")
+dev.off()
 ```
+![](img/carreauxMart.png)
 
 ```{r}
+png("img/carreauxMart2.png")
 mf_map(commune)
 mf_map(car,add = T)
 mf_layout("Carreaux et 2 communes de Martinique", "insee 2019\n Février 2026")
+dev.off()
 ```
-
+![](img/carreauxMart2.png)
 Intersection lg carreaux pour Martinique
 
 ```{r}
@@ -178,9 +183,11 @@ st_write(inter, "data/cours5.gpkg", "car97", delete_layer = T, quiet = T)
 ```
 
 ```{r}
+png("img/interMartinique.png")
 mf_map(inter)
+dev.off()
 ```
-
+  ![](img/interMartinique.png )
 # fichiers cours 3
 
 uniquement men_pauv et recodage une couche par commune
@@ -191,13 +198,14 @@ on charge le 93 on affiche osm on charge commune on sélectionne et on crée une
 
 On fait le rapport carreaux manquants / carreaux présents par dpt
 
-```{r}
+```{r, eval=T}
+library(sf)
 st_layers("data/cours5.gpkg")
-car <- st_read("data/cours5.gpkg", "car")
+car <- st_read("data/cours5.gpkg", "car", quiet = T)
 # 43 M carraux
 carDpt <- as.data.frame(table(car$dpt) )
 names(carDpt) <- c("dpt", "nb")
-diff <- st_read("data/cours5.gpkg", "carreau_manquant")
+diff <- st_read("data/cours5.gpkg", "carreau_manquant", quiet = T)
 diff$nb <- st_area(diff)/(190*190)
 # contrôle sur Bondy
 diff [diff$code == 93010, "nb"]
@@ -215,7 +223,7 @@ names(jointure) <-  c("dpt", "carTot", "carAbs")
 jointure$rapport <- (round((jointure$carAbs)/(jointure$carTot),2))*100
 ```
 
-```{r}
+```{r, eval=T}
 plot(jointure$carTot, jointure$carAbs, log="xy", main = "rapport carreaux présents / absents par dpt", )
 text(jointure$carTot,jointure$carAbs, jointure$dpt, pos = 4)
 ```
@@ -235,39 +243,40 @@ for (c in couche){
   st_write(tmp, "data/base.gpkg", c, delete_layer=T, quiet=T)
 }
 st_layers("data/base.gpkg")
+# reprise pour cours 7
+commune <- st_read("data/cours5.gpkg", "commune")
+st_write (commune, "data/cours7.gpkg", "commune")
 ```
-
 
 # les communes des dpts
 
-
-
 ```{r}
 dpt <- unique(substring(choix,1,2))
-commune <- st_read("data/gros/communes-20220101.shp")
+commune <- st_read("data/gros/communes-20220101.shp", quiet=T)
 commune$dpt <- substring(commune$insee, 1,2)
 commune <- commune [commune$dpt %in% dpt,]
 st_write(commune, "data/gros/cours6.gpkg", "dpt", quiet=T, delete_layer = T)
 ```
 
-
-
 ```{r}
 commune [commune$dpt == 97,]
 ```
+
 Verif nb de dpts
+
 ```{r}
 length(table(commune$dpt))
 ```
 
 # les batiments dans le cadastre etalab
 
+On récupère, dézippe et lit la donnée sous R
+
 
 ```{r}
 url <- ("https://cadastre.data.gouv.fr/data/etalab-cadastre/2025-12-01/geojson/communes/93/93010/cadastre-93010-batiments.json.gz")
-tmp <- tempfile()
-download.file(url, dest = "data/data.json.gz")
-gzfile("data/data.gz")
-list.files("data/data.json")
+download.file(url, dest = "data/bat.json.gz")
+library(R.utils)
+gunzip("data/bat.json.gz")
+bat <- st_read("data/bat.json")
 ```
-
