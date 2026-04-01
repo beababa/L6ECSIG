@@ -87,15 +87,15 @@ Il s'agit de construire votre environnement de travail pour le projet de fin de 
 
 A savoir :
 
--   git
+-   git : à télécharger [ici](https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.2/Git-2.53.0.2-64-bit.exe)
 
--   R studio
+-   [R studio](https://posit.co/download/rstudio-desktop/)
 
 -   R
 
 La découverte de la plateforme data gouv et la fonction de ré-utilisation sera faite au cours prochain.
 
-## Git
+## Github
 
 ### Création du compte
 
@@ -105,9 +105,18 @@ github.com
 
 [créer un site web avec git](https://arfp.github.io/tp/git/github/20-github-pages)
 
+Uniquement les points 1 et 2, pas le point 3
+
+Pour créer un fichier, il suffit de créer par exemple un readme
+
+![](img/git creer fichier.png)
+et de faire son premier commit (= *engagement*)
+
+![](img/commit1.png)
+
 ## Rstudio et R
 
-Distinguer les deux : langage et IDE
+Distinguer les deux : langage et IDE (Environnement de développement, *integrated development environment*)
 
 Attention, paramétrer les historiques sinon cela va générer de gros fichiers encombrants.
 
@@ -117,6 +126,8 @@ Attention, paramétrer les historiques sinon cela va générer de gros fichiers 
 
 [versionner son code](https://thinkr.fr/travailler-avec-git-via-rstudio-et-versionner-son-code/)
 
+A partir de *Configuration* et juste le protocole SSH
+
 points de vigilance
 
 -   création de la clé SSH dans Rstudio et recopie dans git
@@ -124,6 +135,10 @@ points de vigilance
 La clé se positionne dans le répertoire .ssh de votre profil utilisateur
 
 ![](img/cleSSH.png)
+
+Sauvegarder l'ensemble du répertoire .ssh afin de le recopier sur les ordinateurs sur lesquels vous travaillez.
+
+Puis, suivre *Initialisation d'un projet R avec Git*
 
 ### Premier script R
 

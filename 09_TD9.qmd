@@ -17,139 +17,77 @@ knitr::opts_chunk$set(warning = FALSE)
 
 # Objet
 
-Structure d'un projet R
+A travers d'un modèle de projet disponible sur github <https://github.com/beababa/modeleProjet>, les notions suivantes sont abordées :
 
-Markdown
+- Markdown
 
-Lecture de .gpkg
+- Structure d'un projet R
 
-Boucle d'ouverture
+- Le .yml
+
+- Le site web
+
+- Lecture de .gpkg dans un script
+
+
+# Markdown
+
+Récupérer une cheatsheet par exemple, celle qui est intégrée dans R Studio,
+
+menu *Aide / Cheatsheet / rmarkdown*
+
+Détailler les parties les plus importantes pour la mise en forme.
+
+Utiliser l'option *rendu*, observer les éléments proposés de l'en-tête Yaml
 
 # Structure d'un projet R
 
+![](img/structureProjet2.png) Détailler l'utilité de chaque fichier.
+
+# Le .yml
+
+<https://rmarkdown.rstudio.com/lesson-13.html>
+
+exemple de .yml
 
 
-
-```{r}
-data <- read.csv("data/codeINSEEetudiant.csv")
-part1 <- data [,(1:3)]
-part2 <- data [,c(6,4,5)]
-nom <- c("prénom", "groupe", "code")
-names(part1) <- nom
-names(part2) <- nom
-tot <- rbind(part1, part2)
-tot <- tot [!is.na(tot$groupe),]
+```{}
+name: "modèle projet"
+navbar:
+  left:
+    - text: "Script 1"
+      href: script1.html
+    - text: "Script 2"
+      href: script2.html
+  right:
+    - icon: fa-github
+      href: https://github.com/beababa/
+output: 
+  html_document:
+    toc_float: TRUE  
+    theme: united
+    highlight: tango
 ```
 
-37 étudiants (43 communes)
 
-Faire compléter le tableau
+Au niveau des thèmes : “default”, “cerulean”, “journal”, “flatly”, “readable”, “spacelab”, “united”, and “cosmo”.
 
-## Première attribution par dpt
 
-```{r}
-tot$dpt <- substring(tot$code,1,2)
-table(tot$dpt, tot$groupe)
-```
+# Le site web
 
-première attribution : 44 / 92 / 93 / 93 + 95 / 92 + 94 etc ...
+Si le projet est bien structuré et que le \_site.yml, il suffit de faire le *rendu*
 
-## Attribution par région
+![](img/arborescence.png)
+Le rendu
 
-on procéde par région
+![](img/le rendu.png)
 
-```{r}
-library(sf)
-region <- st_read("data/region/regions-20180101.shp", quiet=T)
-region <- st_transform(region, 2154)
-region <- region [!region$code_insee %in% c("01", "02", "03","04","06","11"),]
-idf <- region [region$code_insee == "11",]
-drom <-region [region$code_insee %in% c("01", "02", "03","04","06"),]
-commune <- st_read("data/cours5.gpkg", "commune", quiet = T)
-joint <- merge(commune, tot, by = "code", all.x = T)
-joint <- st_transform(joint, 2154)
-```
 
-```{r}
-library(mapsf)
-inter <- st_intersection(joint, region)
-mf_map(region, col = "wheat", border = "cornsilk")
-mf_map(inter, add = T)
-mf_label(inter, var = "groupe", halo = T, overlap = F, cex = 1.2)
-```
 
-```{r}
-table(inter$groupe, inter$nom.1)
-```
+# Lecture du .gpkg
 
-2e attribution région Auvergne, Hauts, Pays de la Loire
 
-## attribution finale
+Récupérer le script et l'adapter à ses besoins. Le renommer de son prénom et si possible par le git le renvoyer sur la plateforme.
 
-Chaque groupe inscrit sa région / son dpt dans le tableau + un nom de groupe + les prénoms
 
-# Environnement de travail
-
-Il s'agit de construire votre environnement de travail pour le projet de fin de semestre
-
-A savoir :
-
--   git
-
--   R studio
-
--   R
-
-La découverte de la plateforme data gouv et la fonction de ré-utilisation sera faite au cours prochain.
-
-## Git
-
-### Création du compte
-
-github.com
-
-### le site web
-
-[créer un site web avec git](https://arfp.github.io/tp/git/github/20-github-pages)
-
-## Rstudio et R
-
-Distinguer les deux : langage et IDE
-
-Attention, paramétrer les historiques sinon cela va générer de gros fichiers encombrants.
-
-![](img/parametrageRstudio.png)
-
-### Connexion R et git
-
-[versionner son code](https://thinkr.fr/travailler-avec-git-via-rstudio-et-versionner-son-code/)
-
-points de vigilance
-
--   création de la clé SSH dans Rstudio et recopie dans git
-
-La clé se positionne dans le répertoire .ssh de votre profil utilisateur
-
-![](img/cleSSH.png)
-
-### Premier script R
-
-distinguer le data frame et le vecteur
-
-```{r}
-v1 <- c("ville1", "ville2")
-v2 <- c("RN", "LFI")
-df <- data.frame(ville = v1, vainqueur = v2)
-df
-df <- as.data.frame(v1,v2)
-```
-
-### Premier commit
-
-Une fois le script enregistré il faut faire :
-
--   enregistrer les modifications = cocher les fichiers que l'on veut envoyer sur le serveur git
-
--   le commit (validation des modifications), mettre un message clair
-
--   le push
+Adapter le script proposé à sa propre commune.
