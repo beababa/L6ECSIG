@@ -1,0 +1,177 @@
+---
+title: "GT R"
+output: 
+  html: 
+    number_sections: true
+    toc: true
+    code-fold: false
+    code-tools: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache = FALSE)
+# Passer la valeur suivante à TRUE pour reproduire les extractions.
+knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Objet
+
+L'objet de ce cours est de faire des géotraitements avec R et markdown.
+
+Utilisation du script 2 dans le modèle de projet disponible sur github <https://github.com/beababa/modeleProjet>
+
+Mais cette fois ci, 
+
+- créer le script2.Rmd
+
+- utiliser l'autocomplétion en tapant les commandes.
+
+
+
+De plus, nous allons utiliser une nouvelle libraire :  happign
+
+Une librairie très simple d'utilisation qui permet de récupérer les données ign.
+
+librairie [happign](https://paul-carteron.github.io/happign/)
+
+Pour mémoire, faire le point sur
+
+-   les librairies et leur installation
+
+
+Autre référence incontournable :
+
+-   Géotraitements avec R à partir de la [cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/sf.pdf) de la librairie sf
+
+
+
+
+
+
+# La donnée
+
+## Liste définitive des communes
+
+
+::: {.callout-note}
+
+EXO 1 = Recopier et commenter les étapes avec le #
+
+:::
+
+```{r}
+commune <- read.csv("data/framaCalcCours9.csv")
+# Lecture du fichier
+commune <- commune  [, c(3)]
+commune <- unique(commune)
+commune <- commune[-c(34:35)]
+```
+
+## Récupération des géométries
+
+Quelle méthode avons nous utiliser en cours pour récupérer les géométries ?
+
+Examiner la simplicité de la syntaxe de la librairie.
+
+
+```{r}
+library(sf)
+library(happign)
+bondy <- get_apicarto_cadastre("93010", type = "commune")
+tot <- get_apicarto_cadastre(commune, type = "commune")
+st_write(tot, "data/projet.gpkg", "commune", delete_layer = T)
+```
+
+Cela fonctionne égalemetn pour les rasters
+
+
+## Récupérer une orthophoto
+
+::: {.callout-note}
+
+EXO 2 : En adaptant le code, couper aux carreaux manquants de sa commune.
+
+La donnée carreau manquant est dans le fichier cours10.gpkg
+
+:::
+
+
+```{r}
+r <- get_wms_raster(bondy,
+               layer = "ORTHOIMAGERY.ORTHOPHOTOS",
+               res = 10,
+               crs = 2154,
+               rgb = TRUE,
+               filename = "data/bondy.tif",
+               overwrite = FALSE,
+               verbose = TRUE)
+library(terra)
+r <- rast("data/bondy.tif")
+plot(r)
+```
+
+# GT raster : Découpage de raster
+
+On reprend l'idée d'examiner les carreaux absents
+
+```{r}
+car <- st_read("data/cours5.gpkg", "carreau_manquant", quiet=T)
+carBondy <- car [car$code == 93010,]
+plot(carBondy$geom)
+cr <- crop(r, carBondy, mask = T)
+plot(cr)
+```
+
+Observer un seul carreau
+
+```{r}
+carBondy <- st_cast(carBondy,"POLYGON")
+carBondy <- carBondy [1,]
+cr <- crop(r, carBondy, mask = T)
+plot(cr)
+```
+
+
+Que dire de la qualité de l'orthophoto ?
+
+
+
+
+# GT vecteur : Centroides et tampons
+
+::: {.callout-note}
+
+EXO 3 = Trouver la fonction pour le centroide et les tampons sur la cheasheet de 
+la librairie sf  et le faire à partir du centroide de votre commune.
+
+:::
+
+# Isochrones
+
+```{r, eval= TRUE}
+pt <- st_centroid(bondy)
+longlat <- unlist(pt$geometry )
+```
+
+Malheureusement, le get_isochrone de happign ne fonctionne pas.
+
+```{r, eval=FALSE}
+iso <- get_isochrone(pt, time = 15, profile = "pedestrian", source = "pgr")
+```
+
+Utiliser rgeoservices
+
+```{r}
+library(rgeoservices)
+iso <- gs_get_isochrone(
+  longitude = longlat [1],
+  latitude = longlat [2],
+  cost_value = 15,
+  profile = "pedestrian",
+  direction = "departure",
+  time_unit = "minute"
+)
+plot(iso)
+```

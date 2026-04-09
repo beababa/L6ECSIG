@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(cache = FALSE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
-knitr::opts_chunk$set(eval = TRUE)
+knitr::opts_chunk$set(eval = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
 ```
 
@@ -52,6 +52,26 @@ Deux notes :
 
 Le partiel sera sur machine d'une durée de 1h30 : - un exercice sous Arcgis Pro (10 pt) - et un autre sous R(10 pt) (avec un rendu en .pdf)
 
+
+## Barème du projet (sur 10 points)
+
+Merci de déposer votre lien vers votre site web à avant le 19 avril (voir le moodle)
+
+*Tous les étudiants remplissent le moodle* et consignent prénom / nom du groupe / lien
+
+- 1 pt lien valide site web au 19 avril
+
+- 2 pt sur la donnée (sa description)
+
+- 2 pt sur la problématique (présentée le 9 avril mais modifiée en fonction des observations,
+ne pas oublier de faire une introduction et une conclusion)
+
+- 2 pt sur les GT vecteurs (avec schéma de géotraitement obligatoire)
+
+- 2 pt sur les GT Rasters (idem)
+
+- 1 pt sur les jointures
+
 # Données
 
 Il s'agit de vos données pour la commune choisie. Principalement :
@@ -89,7 +109,7 @@ res <- lapply(dpt, choisir)
 
 Attention au 97, il faut prendre un autre fichier filosofi
 
-```{r}
+```{r, eval=FALSE}
 library(sf)
 choix <- read.csv("data/choix.csv", header = F)
 choix <- choix [grep("^97", choix$V1),]
@@ -133,6 +153,10 @@ mf_layout("Choix étudiants hors Martinique", "Insee 2019\nCours L6ECSIG")
 [Argis, learn arcgis](https://learn.arcgis.com/fr/gallery/#?p=arcgispro)
 
 [R la base](https://framabook.org/r-et-espace/)
+
+[librairie sf](<https://r-spatial.github.io/sf/>)
+
+[Le cours que vous n'avez pas eu](https://rgeocarto.github.io/)
 
 Données communales
 
