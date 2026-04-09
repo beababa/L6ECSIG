@@ -1,8 +1,18 @@
+déroulé cours 9
+
+----------------------------------------
+A chaque cours, et avant l'examen.
+
 - vider le répertoire téléchargement
 
 - vider la poubelle
 
 But = faire de l'espace
 
+------------------------------------------
 
+Récup
 
+MARKDOWN
+
+créer 2 sous titre

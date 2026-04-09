@@ -195,22 +195,19 @@ Sous R, on utilise une librairie qui permet d'avoir une syntaxe simple de cette 
 
 ```{r}
 data <- st_read("data/cours7.gpkg", "maisonDeQuartier", quiet = T)
-library(rgeoservices)
+library(happign)
 data <- st_transform(data, 4326)
 accessibilite <- NULL
 nom <- NULL
 i <- 1
 for (i in c(1:length(data$geom))){
-  pt <- unlist(data$geom  [i])
-longitude <- pt [1]
-latitude <- pt [2]
-tmp <- gs_get_isochrone(
-  longitude,
-  latitude,
-  cost_value = 10,
+  pt <- data$geom  [i]
+tmp <- get_isochrone(
+  pt,
+  time = 10,
   profile = "pedestrian",
   direction = "departure",
-  time_unit = "minute"
+  unit = "minute"
 )
 tmpN <- data$name [i]
 accessibilite <- rbind(tmp, accessibilite)

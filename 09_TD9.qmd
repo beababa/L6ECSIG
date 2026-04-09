@@ -19,16 +19,24 @@ knitr::opts_chunk$set(warning = FALSE)
 
 A travers d'un modèle de projet disponible sur github <https://github.com/beababa/modeleProjet>, les notions suivantes sont abordées :
 
-- Markdown
+-   Markdown
 
-- Structure d'un projet R
+-   Structure d'un projet R
 
-- Le .yml
+-   Le .yml
 
-- Le site web
+-   Le site web
 
-- Lecture de .gpkg dans un script
+-   Lecture de .gpkg dans un script
 
+
+L'idée est de récupérer le modèle de projet avec Rstudio et l'item *Nouveau projet / Version Control*
+
+![](img/gitclonehttps.png)
+![](img/gitProjetRep.png)
+L'idéal serait de *pusher* les modifications faites en classe sur le dépôt.
+
+![](img/gitScript2.png)
 
 # Markdown
 
@@ -50,8 +58,7 @@ Utiliser l'option *rendu*, observer les éléments proposés de l'en-tête Yaml
 
 exemple de .yml
 
-
-```{}
+```         
 name: "modèle projet"
 navbar:
   left:
@@ -69,25 +76,28 @@ output:
     highlight: tango
 ```
 
-
 Au niveau des thèmes : “default”, “cerulean”, “journal”, “flatly”, “readable”, “spacelab”, “united”, and “cosmo”.
-
 
 # Le site web
 
 Si le projet est bien structuré et que le \_site.yml, il suffit de faire le *rendu*
 
-![](img/arborescence.png)
-Le rendu
+![](img/arborescence.png) Le rendu
 
-![](img/le rendu.png)
+![](img/le%20rendu.png)
 
+
+# Basiques R
+
+CTRL + ALT + I
+
+CTRL + ENTREE
+
+ALT + -
 
 
 # Lecture du .gpkg
 
-
 Récupérer le script et l'adapter à ses besoins. Le renommer de son prénom et si possible par le git le renvoyer sur la plateforme.
-
 
 Adapter le script proposé à sa propre commune.
