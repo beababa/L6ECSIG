@@ -187,14 +187,29 @@ Aujourd'hui, l'IGN met à disposition des outils qui permettent de faire des iti
 
 [Faire des isochrones avec l'IGN](https://cartes.gouv.fr/aide/fr/guides-utilisateur/visualiseur-cartographique/les-outils-autour-de-la-carte/calculer-une-isochrone/)
 
-Pour le TD, créer quelques isochrones avec cet outil et les importer dans Arcgis.
+Pour le TD, créer quelques isochrones avec la librairie outil et les importer dans Arcgis.
 
 ## R : obtenir un ensemble d'isochrones basé sur l'API
 
 Sous R, on utilise une librairie qui permet d'avoir une syntaxe simple de cette API. On peut ainsi reprendre le fichier des maisons de quartier et obtenir les isochrones.
 
 ```{r}
-data <- st_read("data/cours7.gpkg", "maisonDeQuartier", quiet = T)
+pts <- st_read("data/cours7.gpkg", "maisonDeQuartier", quiet = T)
+pts <- st_transform(pts, 4326)
+library(rgeoservices)
+i <- 1
+for (i in c(1:length(pts$geom))){
+ longlat <- unlist(pts$geom [i])
+  iso <- gs_get_isochrone(
+    longitude = longlat [1],
+    latitude = longlat [2],
+    cost_value = 15,
+    profile = "pedestrian",
+    direction = "departure",
+    time_unit = "minute")
+}
+plot(iso)
+```
 library(happign)
 data <- st_transform(data, 4326)
 accessibilite <- NULL

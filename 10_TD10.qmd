@@ -22,15 +22,13 @@ L'objet de ce cours est de faire des géotraitements avec R et markdown.
 
 Utilisation du script 2 dans le modèle de projet disponible sur github <https://github.com/beababa/modeleProjet>
 
-Mais cette fois ci, 
+Mais cette fois ci,
 
-- créer le script2.Rmd
+-   créer le script2.Rmd
 
-- utiliser l'autocomplétion en tapant les commandes.
+-   utiliser l'autocomplétion en tapant les commandes.
 
-
-
-De plus, nous allons utiliser une nouvelle libraire :  happign
+De plus, nous allons utiliser une nouvelle libraire : happign
 
 Une librairie très simple d'utilisation qui permet de récupérer les données ign.
 
@@ -40,25 +38,16 @@ Pour mémoire, faire le point sur
 
 -   les librairies et leur installation
 
-
 Autre référence incontournable :
 
 -   Géotraitements avec R à partir de la [cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/sf.pdf) de la librairie sf
-
-
-
-
-
 
 # La donnée
 
 ## Liste définitive des communes
 
-
-::: {.callout-note}
-
-EXO 1 = Recopier et commenter les étapes avec le #
-
+::: callout-note
+EXO 1 = Recopier et commenter les étapes avec le \#
 :::
 
 ```{r}
@@ -75,7 +64,6 @@ Quelle méthode avons nous utiliser en cours pour récupérer les géométries ?
 
 Examiner la simplicité de la syntaxe de la librairie.
 
-
 ```{r}
 library(sf)
 library(happign)
@@ -84,19 +72,15 @@ tot <- get_apicarto_cadastre(commune, type = "commune")
 st_write(tot, "data/projet.gpkg", "commune", delete_layer = T)
 ```
 
-Cela fonctionne égalemetn pour les rasters
-
+Cela fonctionne également pour les rasters
 
 ## Récupérer une orthophoto
 
-::: {.callout-note}
-
+::: callout-note
 EXO 2 : En adaptant le code, couper aux carreaux manquants de sa commune.
 
 La donnée carreau manquant est dans le fichier cours10.gpkg
-
 :::
-
 
 ```{r}
 r <- get_wms_raster(bondy,
@@ -133,19 +117,12 @@ cr <- crop(r, carBondy, mask = T)
 plot(cr)
 ```
 
-
 Que dire de la qualité de l'orthophoto ?
-
-
-
 
 # GT vecteur : Centroides et tampons
 
-::: {.callout-note}
-
-EXO 3 = Trouver la fonction pour le centroide et les tampons sur la cheasheet de 
-la librairie sf  et le faire à partir du centroide de votre commune.
-
+::: callout-note
+EXO 3 = Trouver la fonction pour le centroide et les tampons sur la cheasheet de la librairie sf et le faire à partir du centroide de votre commune.
 :::
 
 # Isochrones

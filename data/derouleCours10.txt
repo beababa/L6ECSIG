@@ -1,0 +1,37 @@
+déroulé cours 9
+
+----------------------------------------
+A chaque cours, et avant l'examen.
+
+- vider le répertoire téléchargement
+
+- vider la poubelle
+
+But = faire de l'espace
+
+------------------------------------------
+
+
+
+MARKDOWN
+
+créer 2 sous titres et afficher la page web
+
+------------------------------------
+
+modifier le .yaml pour mettre votre script à vous + changer le thème
+et afficher
+
+--------------------------------
+
+adapter le script à son cas communal
+
+
+----------------------------------
+
+créer la carte et y mettre des couleurs
+
+------------------------
+
+
+jt@rlVatcqifV2025%

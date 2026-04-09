@@ -280,3 +280,48 @@ library(R.utils)
 gunzip("data/bat.json.gz")
 bat <- st_read("data/bat.json")
 ```
+
+
+# carreaux manquants pour communes finales
+
+
+```{r}
+commune <- st_read("data/projet.gpkg", "commune")
+car <- filosofi  [filosofi$lcog_geo %in% commune$code_insee,]
+length(names(table(car$lcog_geo)))
+```
+
+Il en manque 2
+
+```{r}
+st_write(car, "data/projet.gpkg", "car")
+```
+```{r}
+# on agrège les carreaux par dpt
+car$dpt <- substring(car$lcog_geo,1,2)
+aggCar <- aggregate(car [, c( "dpt")], by = list(car$dpt), length)
+# même opération sur les communes
+aggCommune <- aggregate(commune [, "code_dep"], by=list(commune$code_dep), length)
+names(aggCar)[1:2] <- c("dpt", "nb")
+names(aggCommune)[1:2] <- c("dpt", "nb")
+diff <-  NULL
+commune <- commune[commune$code_dep != 97,]
+dpt <- unique(commune$code_dep)
+st_crs(aggCar)
+st_crs(aggCommune)
+aggCommune <- st_transform(aggCommune, 2154)
+commune <- st_transform(commune, 2154)
+for (d in dpt){
+  print(d)
+  tmp <- st_difference(aggCommune [aggCommune$dpt == d, c("dpt")], aggCar [aggCar$dpt == d, c("dpt")])
+  diff <- rbind(tmp, diff)
+}
+```
+
+```{r}
+#diff <- st_cast(diff,"POLYGON")
+inter <- st_intersection(diff, commune)
+inter <- inter [, c("gid", "nom_com")]
+st_write(inter , "data/projet.gpkg", "carreau_manquant", delete_layer = T, quiet = T)
+st_layers("data/projet.gpkg")
+```

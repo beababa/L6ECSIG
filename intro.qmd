@@ -8,8 +8,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_chunk$set(cache = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(cache = TRUE)
 # Passer la valeur suivante à TRUE pour reproduire les extractions.
 knitr::opts_chunk$set(eval = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
@@ -35,7 +35,7 @@ La thématique utilisée est *Commune pauvre et/ou riche ?*
 
 # Déroulé
 
-```{r}
+```{r, eval = TRUE}
 data <- read.csv("data/deroule.csv", header = T, fileEncoding = "UTF-8")
 knitr::kable(data)
 ```
@@ -71,6 +71,8 @@ ne pas oublier de faire une introduction et une conclusion)
 - 2 pt sur les GT Rasters (idem)
 
 - 1 pt sur les jointures
+
+La correction sera déposée avec le détail des points sur le moodle.
 
 # Données
 
@@ -142,11 +144,15 @@ dptSel <- dpt [dpt$code %in% couches,]
 ```
 
 ```{r}
+png("img/choixEtudiant.png")
 mf_map(dpt, col = "wheat", border="grey")
 mf_map(union, col = "pink", border = NA, add = T)
 mf_label(dptSel, var = "nom", cex = 0.6, overlap = F, col ="red")
 mf_layout("Choix étudiants hors Martinique", "Insee 2019\nCours L6ECSIG")
+dev.off()
 ```
+
+![](img/choixEtudiant.png)
 
 # Ressources
 
