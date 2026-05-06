@@ -52,25 +52,23 @@ Deux notes :
 
 Le partiel sera sur machine d'une durée de 1h30 : - un exercice sous Arcgis Pro (10 pt) - et un autre sous R(10 pt) (avec un rendu en .pdf)
 
-
 ## Barème du projet (sur 10 points)
 
 Merci de déposer votre lien vers votre site web à avant le 19 avril (voir le moodle)
 
 *Tous les étudiants remplissent le moodle* et consignent prénom / nom du groupe / lien
 
-- 1 pt lien valide site web au 19 avril
+-   1 pt lien valide site web au 19 avril
 
-- 2 pt sur la donnée (sa description)
+-   2 pt sur la donnée (sa description)
 
-- 2 pt sur la problématique (présentée le 9 avril mais modifiée en fonction des observations,
-ne pas oublier de faire une introduction et une conclusion)
+-   2 pt sur la problématique (présentée le 9 avril mais modifiée en fonction des observations, ne pas oublier de faire une introduction et une conclusion)
 
-- 2 pt sur les GT vecteurs (avec schéma de géotraitement obligatoire)
+-   2 pt sur les GT vecteurs (avec schéma de géotraitement obligatoire)
 
-- 2 pt sur les GT Rasters (idem)
+-   2 pt sur les GT Rasters (idem)
 
-- 1 pt sur les jointures
+-   1 pt sur les jointures
 
 La correction sera déposée avec le détail des points sur le moodle.
 
@@ -160,7 +158,7 @@ dev.off()
 
 [R la base](https://framabook.org/r-et-espace/)
 
-[librairie sf](<https://r-spatial.github.io/sf/>)
+[librairie sf](https://r-spatial.github.io/sf/)
 
 [Le cours que vous n'avez pas eu](https://rgeocarto.github.io/)
 
