@@ -5,7 +5,7 @@ website:
   title: "L6ECSIG"
   navbar:
     left:
-      - text: "Introduction"
+      - text: "Intro"
         href: intro.html
       - text: "Données"
         href: 01_TD1.html  
@@ -21,12 +21,14 @@ website:
         href: 06_TD6.html 
       - text: "Distance"
         href: 07_TD7.html
-      - text: "Environnement"
+      - text: "Env"
         href: 08_TD8.html
       - text: "Script"
         href: 09_TD9.html
       - text: "GT R"
         href: 10_TD10.html
+      - text: "exam"
+        href: 11_TD11.html
     right:
       - icon: fa-github
         href: https://github.com/beababa/beababa.github.io

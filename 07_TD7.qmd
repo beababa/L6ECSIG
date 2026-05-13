@@ -163,7 +163,7 @@ library(sf)
 couches <- st_layers("data/gros/BDT_3-5_GPKG_LAMB93_D093-ED2025-12-15.gpkg")
 couches <- couches$name
 data <- st_read("data/gros/BDT_3-5_GPKG_LAMB93_D093-ED2025-12-15.gpkg", "route_numerotee_ou_nommee")
-st_write(data,"data/cours7/route.gpkg", "bdtopo")
+st_write(data,"data/cours7/route.gpkg", "bdtopo", append = FALSE)
 ```
 
 -   6 M° pour l'extraction des petites routes
@@ -204,52 +204,54 @@ Sous R, on utilise une librairie qui permet d'avoir une syntaxe simple de cette 
 pts <- st_read("data/cours7.gpkg", "maisonDeQuartier", quiet = T)
 pts <- st_transform(pts, 4326)
 library(rgeoservices)
+iso <- NULL
 i <- 1
 for (i in c(1:length(pts$geom))){
  longlat <- unlist(pts$geom [i])
-  iso <- gs_get_isochrone(
+  tmpIso <- gs_get_isochrone(
     longitude = longlat [1],
     latitude = longlat [2],
     cost_value = 15,
     profile = "pedestrian",
     direction = "departure",
     time_unit = "minute")
+  iso <- rbind(tmpIso, iso)
 }
 plot(iso)
 ```
 
 
+
 Solution plus simple encore avec la librairie happign (ne fonctionne pas actuellement)
+
+```{r}
+iso$id <- seq(1:7)
+```
+
+
+
+La librairie happign propose une fonction plus simple mais qui ne fonctionne pas.
+
 
 ```{r, eval=FALSE}
 library(happign)
-data <- st_transform(data, 4326)
-accessibilite <- NULL
-nom <- NULL
-i <- 1
-for (i in c(1:length(data$geom))){
-  pt <- data$geom  [i]
-tmp <- get_isochrone(
-  pt,
+iso <- get_isochrone(
+  pts,
   time = 10,
   profile = "pedestrian",
   direction = "departure",
   unit = "minute"
 )
-tmpN <- data$name [i]
-accessibilite <- rbind(tmp, accessibilite)
-nom <- c(tmpN, nom)
-}
-accessibilite$nom <- nom
 ```
 
 
 
 
-```{r, eval=FALSE}
+
+```{r}
 commune <- st_transform(commune, 4326)
 mf_map(commune)
-mf_map(data, col = "red", add = T)
-mf_map(accessibilite, type="typo", var = "nom", add = T, alpha = 0.5, border = NA, leg_pos=NA)
+mf_map(iso, type="typo", var = "id", add = T, alpha = 0.5, border = NA, leg_pos=NA)
+mf_map(pts, col = "red", add = T)
 mf_layout("Isochrones 10 mn à pied autour des Maisons de Quartier", "librairie rgeoservices\nMars 2026")
 ```
