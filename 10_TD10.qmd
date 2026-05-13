@@ -67,7 +67,9 @@ Examiner la simplicité de la syntaxe de la librairie.
 ```{r}
 library(sf)
 library(happign)
+# Nantes 44109
 bondy <- get_apicarto_cadastre("93010", type = "commune")
+plot(bondy$geometry)
 tot <- get_apicarto_cadastre(commune, type = "commune")
 st_write(tot, "data/projet.gpkg", "commune", delete_layer = T)
 ```
@@ -89,7 +91,7 @@ r <- get_wms_raster(bondy,
                crs = 2154,
                rgb = TRUE,
                filename = "data/bondy.tif",
-               overwrite = FALSE,
+               overwrite = TRUE,
                verbose = TRUE)
 library(terra)
 r <- rast("data/bondy.tif")
@@ -103,7 +105,6 @@ On reprend l'idée d'examiner les carreaux absents
 ```{r}
 car <- st_read("data/cours5.gpkg", "carreau_manquant", quiet=T)
 carBondy <- car [car$code == 93010,]
-plot(carBondy$geom)
 cr <- crop(r, carBondy, mask = T)
 plot(cr)
 ```

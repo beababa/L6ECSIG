@@ -69,7 +69,13 @@ bpe2 <- bpe [bpe$DEPCOM %in% choix & bpe$SDOM == 'D5',]
 bpe2 <- bpe2 [!is.na(bpe2$LAMBERT_X), ]
 bpe2 <- st_as_sf(bpe2, coords = c("LAMBERT_X", "LAMBERT_Y"), crs = 2154)
 st_write(bpe2 [,c("NOMRS","TYPEQU", "DEPCOM")], "data/cours7.gpkg", "bpe", quiet = T, delete_layer = T)
-table(bpe2$DEPCOM)
+```
+
+
+```{r}
+library(sf)
+bpe <- st_read("data/cours7.gpkg", "bpe")
+table(bpe$DEPCOM)
 ```
 
 ```{r, eval=FALSE}
@@ -107,6 +113,7 @@ A savoir :
 -   Polygones de Thiessen, triangulation de Delaunay.
 
 Tout résident dans le polygone ira vers l'équipement.
+
 
 ```{r}
 library(sf)
@@ -193,7 +200,7 @@ Pour le TD, créer quelques isochrones avec la librairie outil et les importer d
 
 Sous R, on utilise une librairie qui permet d'avoir une syntaxe simple de cette API. On peut ainsi reprendre le fichier des maisons de quartier et obtenir les isochrones.
 
-```{r}
+```{r, eval=FALSE}
 pts <- st_read("data/cours7.gpkg", "maisonDeQuartier", quiet = T)
 pts <- st_transform(pts, 4326)
 library(rgeoservices)
@@ -210,6 +217,11 @@ for (i in c(1:length(pts$geom))){
 }
 plot(iso)
 ```
+
+
+Solution plus simple encore avec la librairie happign (ne fonctionne pas actuellement)
+
+```{r, eval=FALSE}
 library(happign)
 data <- st_transform(data, 4326)
 accessibilite <- NULL
@@ -231,7 +243,10 @@ nom <- c(tmpN, nom)
 accessibilite$nom <- nom
 ```
 
-```{r}
+
+
+
+```{r, eval=FALSE}
 commune <- st_transform(commune, 4326)
 mf_map(commune)
 mf_map(data, col = "red", add = T)
