@@ -87,10 +87,10 @@ La donnée carreau manquant est dans le fichier cours10.gpkg
 ```{r}
 r <- get_wms_raster(bondy,
                layer = "ORTHOIMAGERY.ORTHOPHOTOS",
-               res = 10,
+               res = 0.5,
                crs = 2154,
                rgb = TRUE,
-               filename = "data/bondy.tif",
+               filename = "data/gros/bondy.tif",
                overwrite = TRUE,
                verbose = TRUE)
 library(terra)

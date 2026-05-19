@@ -23,8 +23,17 @@ Préparation des fichiers
 
 ```{r}
 choix <- read.table("data/choix.csv", fileEncoding = "UTF-8")
+choix2 <- read.csv("data/choixFinale.csv")
+choix2 <- as.vector(choix2$choix.de.la.commune..code.INSEE.)
+choix2 <- unique(choix2)
+# 35 communes différentes
 choix <- as.vector(choix$V1)
+# Concaténation choix choix2
+choix <- c(choix, choix2)
+choix <- unique(choix)
 ```
+
+49 choix différents en concaténant les 2 choix 
 
 pb JSON to GEOJSON
 
@@ -92,6 +101,52 @@ df$dpt <- substring(df$code,1,2)
 table(df$dpt)
 st_write(df, "data/cours5.gpkg", "commune", delete_layer = T, quiet = T)
 ```
+
+
+# les carreaux
+
+la base est filosofi 2019
+
+l'idée est de faire une couche par dpt pour limiter le poids de l'opération d'intersection
+
+```{r}
+commune <- st_read("data/cours5.gpkg", "commune")
+dpt <- unique(commune$dpt)
+car <- st_read("data/gros/carreaux_200m_met.gpkg")
+carMart <- st_read("data/gros/carreaux_200m_mart.gpkg")
+```
+
+
+```{r}
+# intersection
+inter <- st_intersection(car, commune)
+communeMart <- commune [commune$dpt == 97,]
+interMart <- st_intersection(carMart, st_transform(communeMart, st_crs(carMart)))
+plot(interMart$geom)
+st_write(inter, "data/gros/construction.gpkg", "car", delete_layer = T)
+st_write(interMart, "data/gros/construction.gpkg", "carMart", delete_layer = T)
+```
+
+```{r}
+car <- st_read("data/gros/construction.gpkg", "car")
+car$dpt <- substring(car$lcog_geo,1,2)
+dpt <- unique(car$dpt)
+for (d in dpt){
+  sel <- car [ car$dpt == d,]
+  st_write(sel, "data/carDpt.gpkg", d, delete_layer = T)
+}
+carMart <- st_read("data/gros/construction.gpkg", "carMart")
+st_write(carMart, "data/carDpt.gpkg", "97", delete_layer = T)
+```
+verif
+
+```{r}
+st_layers("data/carDpt.gpkg")
+sel <- st_layers("data/carDpt.gpkg")
+dpt2 <-sel$name
+length(dpt2)
+```
+Il y a bien 23 dpt au total
 
 # Extraction lg
 
@@ -325,3 +380,170 @@ inter <- inter [, c("gid", "nom_com")]
 st_write(inter , "data/projet.gpkg", "carreau_manquant", delete_layer = T, quiet = T)
 st_layers("data/projet.gpkg")
 ```
+
+
+
+# données examen
+
+
+
+## Orthophoto Bondy
+
+bondy.tif dans gros
+
+## Carreaux
+
+pb le requêteur de carreaux idf ne fonctionne pas donc on intégre les carreaux
+par dpt
+
+```{r}
+st_layers("data/carDpt.gpkg")
+```
+
+
+
+## sujet 1 : carte scolaire
+
+- limite Bondy
+- écoles Bondy
+- carreaux bondy
+
+
+```{r}
+ecole <- st_read("data/ecole.geojson")
+ecole <- st_centroid(ecole)
+bondy <- commune [commune$code == 93010,]
+car93 <- st_read("data/carDpt.gpkg", "93")
+```
+
+enregistrement
+
+
+```{r}
+st_write(ecole, "data/examen1.gpkg", "ecole", delete_layer = T)
+st_write(bondy, "data/examen1.gpkg", "commune", delete_layer = T)
+st_write(car93, "data/examen1.gpkg", "carreauFilosofi93", delete_layer = T)
+st_layers("data/examen1.gpkg")
+```
+
+
+
+
+
+
+Filtres
+
+```{r}
+carBondy <- carBondy [grep(93010, carBondy$lcog_geo),]
+ecole <- st_transform(ecole, 2154)
+ecole <- ecole [ecole$school.FR == "élémentaire",] 
+```
+
+carto
+
+```{r}
+mf_map(bondy)
+mf_map(carBondy, add = T, col = NA)
+mf_map(ecole, add = T, col ="red")
+```
+
+
+## Examen 2 : SIG
+
+
+- cadastre
+- bat
+- carreaux
+
+```{r}
+cadastre <- st_read ("data/dataCours1/cadastre-93010-parcelles.json")
+st_write(cadastre, "data/examen2.gpkg", "cadastre")
+st_write(car93, "data/examen2.gpkg", "carreauFilosofi93")
+bat <- st_read("data/gros/buildingOSM.geojson")
+bat <- st_collection_extract(bat,"POLYGON")
+bat <- st_cast(bat, "POLYGON")
+bat <- bat [, "building"] 
+plot(bat$geometry)
+st_write(bat, "data/examen2.gpkg", "batOSM")
+```
+```{r}
+car93 <- st_transform(car93, 4326)
+mf_map(cadastre)
+mf_map(car93, add = T , col = NA, border = "green")
+mf_map(bat, add = T, col=NA, border ="red")
+```
+
+
+```{r}
+st_layers("data/examen2.gpkg")
+```
+
+s
+
+## Examen 3 = carte électorale
+
+
+```{r}
+equipement <- st_read("data/amenity.geojson") 
+equipement <- equipement [, "amenity"] 
+equipement <- st_centroid(equipement)
+st_write(equipement, "data/examen3/examen3.gpkg", "equipementOSM", delete_layer = T)
+```
+
+
+
+
+```{r}
+bv <- st_read("data/gros/bureau-de-vote-insee-reu-openstreetmap.gpkg")
+bvSel <- bv  [bv$insee %in% commune$code,]
+# verif
+length(unique(bvSel$insee))
+setdiff( commune$code, bvSel$insee)
+bvParis <- bv [ bv$insee == 75056,]
+bvParis$arr <- substring(bvParis$bureau, 4,5)
+bvParis19  <- bvParis [bvParis$arr == 19,]
+bvParis19 <- bvParis19 [,-7]
+bvSel <- rbind(bvSel, bvParis19)
+
+bvSel$bureauCourt <- substring(bvSel$bureau, 7,10) 
+
+st_write(bvSel, "data/examen3/examen3.gpkg", "bv")
+st_write(car93, "data/examen3/examen3.gpkg", "carreauxFilosofi93")
+```
+
+```{r}
+res <- read.csv2("data/gros/municipales-2026-resultats-bv-par-communes-2026-03-20.csv")
+res$bureauCourt <- as.integer(res$Code.BV)
+resSel <- res [res$Code.commune %in% commune$code,]
+str(res)
+resBondy <- res [res$Code.commune == 93010,]
+bvBondy <- bvSel [bvSel$insee == 93010,]
+# verif
+bvBondy$bureauCourt
+resBondy$bureauCourt
+jointure <- merge(bvBondy, resBondy, by = "bureauCourt")
+```
+
+
+```{r}
+mf_map(jointure, type ="choro", "Voix.1")
+mf_map(car93, add = T, col=NA, border ="red")
+```
+
+```{r}
+st_layers("data/examen3/examen3.gpkg")
+write.csv(resBondy, "data/examen3/resultatBondy.csv")
+st_write(bvBondy, "data/examen3/examen3.gpkg", "bvBondy")
+write.csv(resSel, "data/examen3/resultat.csv")
+```
+
+
+Eclatement fichier .pdf
+
+```{r}
+library(pdftools)
+pdf_subset("data/SUJET 2026 - EXAMEN L6ECSIG.pdf",1, output = "data/sujet1.pdf")
+pdf_subset("data/SUJET 2026 - EXAMEN L6ECSIG.pdf",2, output = "data/sujet2.pdf")
+pdf_subset("data/SUJET 2026 - EXAMEN L6ECSIG.pdf",3, output = "data/sujet3.pdf")
+```
+
